@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="color-scheme" content="light">
+    <title>Suchmaschinen kennenlernen</title>
+    <style>
+        /* ===== Lern-Kit (gemeinsam für DM-6-Lernumgebungen) ===== */
+        :root {
+            --ink: #1f1a2e; --muted: #5d5670; --line: #e6e1ee; --card: #fff;
+            --ok: #15803d; --ok-soft: #dcfce7; --bad: #be123c; --bad-soft: #ffe4e6;
+            --r: 20px;
+            --font: ui-rounded, "SF Pro Rounded", "Nunito", "Segoe UI", system-ui, -apple-system, sans-serif;
+        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { margin: 0; height: 100%; }
+        body {
+            font-family: var(--font); color: var(--ink); background: var(--bg);
+            display: flex; flex-direction: column; height: 100dvh; overflow: hidden;
+            -webkit-text-size-adjust: 100%;
+        }
+        button, input, select, textarea { font-family: inherit; }
+        .top {
+            flex-shrink: 0; height: 58px; display: flex; align-items: center; gap: 14px;
+            padding: 0 max(16px, env(safe-area-inset-right)) 0 max(16px, env(safe-area-inset-left));
+            background: var(--hero); color: #fff;
+        }
+        .brand {
+            display: flex; align-items: center; gap: 8px; background: none; border: 0; color: inherit;
+            font-weight: 900; font-size: 1.05rem; min-height: 44px; cursor: pointer; padding: 0; white-space: nowrap;
+        }
+        .brand .ico { font-size: 1.45rem; }
+        .prog { flex: 1; display: flex; align-items: center; gap: 10px; min-width: 90px; }
+        .prog .track { flex: 1; height: 10px; background: rgba(255,255,255,.22); border-radius: 99px; overflow: hidden; }
+        .prog .fill { height: 100%; width: 0; background: var(--hero-accent, #fff); border-radius: 99px; transition: width .4s; }
+        .prog .num { font-weight: 800; font-size: .88rem; white-space: nowrap; opacity: .95; }
+        .chips {
+            flex-shrink: 0; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none;
+            padding: 8px max(16px, env(safe-area-inset-right)) 8px max(16px, env(safe-area-inset-left));
+            background: rgba(255,255,255,.82); border-bottom: 1px solid var(--line);
+            -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+        }
+        .chips::-webkit-scrollbar { display: none; }
+        .chip {
+            display: flex; align-items: center; gap: 8px; flex-shrink: 0; min-height: 44px;
+            padding: 4px 14px 4px 4px; border-radius: 99px; border: 2px solid var(--line);
+            background: #fff; color: var(--ink); font-weight: 750; font-size: .92rem;
+            cursor: pointer; touch-action: manipulation; white-space: nowrap;
+        }
+        .chip b {
+            width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center;
+            background: var(--soft); font-size: .95rem;
+        }
+        .chip.home { padding: 4px 12px; font-size: 1.15rem; }
+        .chip.on { border-color: var(--accent); background: var(--soft); }
+        .chip.on b { background: var(--accent); color: var(--on-accent); }
+        .chip.ok b { background: var(--ok); color: #fff; }
+        .chip .st { font-size: .7rem; }
+        main {
+            flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain;
+            padding: 20px max(16px, env(safe-area-inset-right)) 36px max(16px, env(safe-area-inset-left));
+        }
+        .wrap { max-width: 880px; margin: 0 auto; }
+        .foot {
+            flex-shrink: 0; display: flex; gap: 10px; align-items: center; justify-content: space-between;
+            padding: 10px max(16px, env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+            background: #fff; border-top: 1px solid var(--line);
+        }
+        .foot .mid { flex: 1; text-align: center; font-size: .9rem; color: var(--muted); font-weight: 750; line-height: 1.3; }
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            min-height: 50px; padding: 12px 22px; border-radius: 16px; border: 0;
+            background: var(--accent); color: var(--on-accent); font-weight: 850; font-size: 1.02rem;
+            cursor: pointer; box-shadow: 0 4px 0 var(--accent-deep); touch-action: manipulation;
+            text-decoration: none; line-height: 1.2;
+        }
+        .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--accent-deep); }
+        .btn.ghost { background: #fff; color: var(--ink); box-shadow: inset 0 0 0 2px var(--line); }
+        .btn.ghost:active { transform: none; background: var(--soft); }
+        .btn.ok { background: var(--ok); color: #fff; box-shadow: 0 4px 0 #0d5c2b; }
+        .btn.white { background: #fff; color: var(--ink); box-shadow: 0 4px 0 rgba(0,0,0,.18); }
+        .btn.small { min-height: 44px; padding: 8px 16px; font-size: .95rem; }
+        .btn:disabled { opacity: .45; box-shadow: none; transform: none; cursor: default; }
+        .linkish { background: none; border: 0; color: var(--muted); text-decoration: underline; font-size: .9rem; min-height: 44px; cursor: pointer; }
+        .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+        .actions.center { justify-content: center; }
+        .center { text-align: center; }
+
+        .s-hero {
+            background: var(--hero); color: #fff; border-radius: 24px; padding: 22px;
+            margin-bottom: 16px; box-shadow: 0 12px 28px var(--shadow, rgba(40,20,80,.18));
+        }
+        .s-hero h1 { margin: 10px 0 10px; font-size: 1.6rem; line-height: 1.2; }
+        .s-hero .lead { font-size: 1.1rem; line-height: 1.5; margin: 0; opacity: .95; }
+        .home-hero { text-align: center; padding: 28px 22px; }
+        .home-hero .big-ico { font-size: 3.4rem; line-height: 1; }
+        .home-hero .stars-total { margin-top: 12px; font-weight: 850; }
+        .kicker { display: flex; flex-wrap: wrap; gap: 6px; }
+        .tag { display: inline-flex; align-items: center; gap: 4px; background: rgba(255,255,255,.2); border-radius: 99px; padding: 5px 11px; font-weight: 800; font-size: .82rem; }
+        .goal { margin: 0; background: rgba(255,255,255,.16); border-radius: 14px; padding: 10px 12px; font-weight: 650; line-height: 1.45; }
+
+        .block {
+            background: var(--card); border-radius: var(--r); padding: 20px; margin-bottom: 14px;
+            border: 1px solid var(--line); box-shadow: 0 8px 22px rgba(30,20,60,.05);
+        }
+        .bh { display: flex; align-items: center; gap: 10px; margin: 0 0 12px; font-size: 1.12rem; font-weight: 900; line-height: 1.25; }
+        .bi { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; font-size: 1.2rem; background: var(--soft); flex-shrink: 0; }
+        .block.learn .bi { background: #e0ecff; }
+        .block.task { border-left: 6px solid #f97316; }
+        .block.task .bi { background: #ffedd5; }
+        .block.play { border-left: 6px solid var(--accent); }
+        .block.team { border-left: 6px solid #22c55e; }
+        .block.team .bi { background: #dcfce7; }
+        .block.info .bi { background: #fef3c7; }
+        .block.journal { background: #fffdf2; border-left: 6px solid #eab308; }
+        .block.journal .bi { background: #fef3c7; }
+        p { line-height: 1.55; font-size: 1.04rem; margin: 0 0 10px; }
+        p:last-child { margin-bottom: 0; }
+        h3 { margin: 0 0 8px; font-size: 1.08rem; }
+        .muted { color: var(--muted); }
+        .grid { display: grid; gap: 10px; }
+        .grid.two { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+        .grid.three { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+        .tile { background: #fff; border: 2px solid var(--line); border-radius: 16px; padding: 12px 14px; line-height: 1.45; }
+        .tile > b:first-child { display: block; margin-bottom: 3px; }
+        .tile.big-tile { font-size: 1.08rem; font-weight: 650; background: var(--soft); border-color: transparent; }
+        .num-badge { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--on-accent); font-weight: 900; font-size: .9rem; margin-right: 8px; }
+        .safe { display: flex; gap: 8px; align-items: flex-start; background: #fff7d6; border-radius: 12px; padding: 10px 12px; margin-top: 12px; font-weight: 750; font-size: .97rem; }
+        .steps { margin: 6px 0 0; padding-left: 22px; }
+        .steps li { margin-bottom: 7px; line-height: 1.45; font-size: 1.02rem; }
+        .roles { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); margin: 10px 0; }
+        .role { background: #f0fdf4; border-radius: 14px; padding: 10px 12px; line-height: 1.4; font-size: .97rem; }
+        .role b { display: block; }
+        details summary { min-height: 44px; display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 850; touch-action: manipulation; }
+        details[open] summary { margin-bottom: 8px; }
+
+        .choice {
+            display: block; width: 100%; text-align: left; background: #fff; color: var(--ink);
+            border: 2px solid var(--line); border-radius: 14px; padding: 12px 14px; margin-top: 8px;
+            min-height: 50px; font-weight: 700; font-size: 1rem; line-height: 1.35; cursor: pointer; touch-action: manipulation;
+        }
+        .choice:active { background: var(--soft); }
+        .choice.good { background: var(--ok-soft); border-color: var(--ok); }
+        .choice.bad { background: var(--bad-soft); border-color: var(--bad); }
+        .choice:disabled { cursor: default; color: var(--ink); }
+        .seg { display: flex; flex-wrap: wrap; gap: 8px; }
+        .seg .choice { width: auto; margin-top: 0; flex: 1 1 auto; text-align: center; }
+        .seg .choice.sel { border-color: var(--accent); background: var(--soft); }
+        .fb { margin-top: 12px; border-radius: 14px; padding: 12px 14px; font-weight: 700; line-height: 1.45; display: none; }
+        .fb.show { display: block; }
+        .fb.good { background: var(--ok-soft); color: #14532d; }
+        .fb.bad { background: var(--bad-soft); color: #881337; }
+        .fb.info { background: var(--soft); color: var(--ink); }
+        .fb-next { margin-top: 10px; }
+        .counter { display: inline-block; background: var(--soft); border-radius: 99px; padding: 5px 12px; font-weight: 850; font-size: .88rem; margin-bottom: 10px; }
+        .done-box { text-align: center; padding: 18px; border-radius: 16px; background: var(--ok-soft); color: #14532d; font-weight: 800; line-height: 1.5; }
+        .done-box .big { font-size: 2.2rem; }
+        input.txt, input.num, select.txt {
+            min-height: 48px; border-radius: 12px; border: 2px solid var(--line); padding: 8px 12px;
+            font-size: 1.05rem; background: #fff; color: var(--ink); width: 100%;
+        }
+        input.num { width: 140px; }
+        input.txt:focus, input.num:focus, select.txt:focus { outline: none; border-color: var(--accent); }
+        .field { margin-bottom: 10px; }
+        .field > label { display: block; font-weight: 800; margin-bottom: 5px; font-size: .97rem; }
+
+        .jq { margin-bottom: 14px; }
+        .jq label { display: block; font-weight: 800; margin-bottom: 6px; line-height: 1.4; }
+        .jq textarea {
+            width: 100%; min-height: 86px; border-radius: 14px; border: 2px solid #ece3b8; background: #fff;
+            padding: 12px; font-size: 1.02rem; line-height: 1.45; resize: vertical; color: var(--ink);
+        }
+        .jq textarea:focus { outline: none; border-color: var(--accent); }
+
+        .vocab {
+            display: inline-flex; align-items: center; min-height: 34px; padding: 0 4px; margin: 0 1px;
+            background: transparent; border: 0; border-bottom: 2px dashed var(--accent);
+            color: inherit; font: 800 1em/1.2 var(--font); cursor: pointer; position: relative; touch-action: manipulation;
+        }
+        .vocab.open { background: var(--soft); border-radius: 8px; }
+        .vocab .tip {
+            display: none; position: absolute; left: 0; top: calc(100% + 6px); z-index: 5;
+            width: min(280px, 70vw); background: var(--ink); color: #fff; padding: 10px 12px;
+            border-radius: 12px; font-weight: 600; font-size: .92rem; text-align: left; box-shadow: 0 8px 20px rgba(0,0,0,.25);
+        }
+        .vocab.open .tip { display: block; }
+
+        .home-grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+        .st-card {
+            display: flex; gap: 12px; align-items: center; text-align: left; background: #fff;
+            border: 2px solid var(--line); border-radius: 18px; padding: 12px 14px; cursor: pointer;
+            min-height: 66px; font: inherit; color: inherit; touch-action: manipulation;
+        }
+        .st-card:active { background: var(--soft); }
+        .st-card .n { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; background: var(--soft); font-size: 1.3rem; flex-shrink: 0; }
+        .st-card.ok .n { background: var(--ok); color: #fff; font-weight: 900; }
+        .st-card .t { display: block; font-weight: 850; line-height: 1.25; }
+        .st-card .m { display: block; font-size: .84rem; color: var(--muted); font-weight: 650; margin-top: 3px; }
+        .part-h { margin: 20px 4px 8px; font-size: .82rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 900; }
+        .part-h:first-of-type { margin-top: 4px; }
+        .m-res { background: var(--soft); border-radius: 12px; padding: 10px 12px; font-weight: 700; }
+        .m-q { margin-top: 10px; }
+        .m-q b { display: block; margin-bottom: 4px; }
+        .m-q p { white-space: pre-wrap; background: #fafafa; border-radius: 10px; padding: 8px 10px; }
+        .print-only { display: none; }
+
+        .toast {
+            position: fixed; left: 50%; bottom: 96px; transform: translateX(-50%) translateY(16px);
+            background: var(--ink); color: #fff; padding: 12px 18px; border-radius: 14px; font-weight: 750;
+            opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; z-index: 60;
+            max-width: min(520px, 90vw); text-align: center; line-height: 1.4;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%); }
+
+        /* Handy-Rahmen für nachgebaute Apps */
+        .phone { width: min(360px, 100%); margin: 12px auto 0; background: #111; border-radius: 30px; padding: 10px; box-shadow: 0 14px 30px rgba(0,0,0,.25); }
+        .phone-screen { border-radius: 22px; min-height: 440px; position: relative; overflow: hidden; background: #eef4ff; color: #142033; }
+
+        @media (max-width: 640px) {
+            .chip span { display: none; }
+            .chip { padding: 4px; }
+            .chip.home { padding: 4px 10px; }
+            .brand .txt { display: none; }
+            .s-hero h1 { font-size: 1.35rem; }
+            .hide-s { display: none; }
+        }
+        @media print {
+            body { display: block; height: auto; overflow: visible; background: #fff; }
+            .top, .chips, .foot, .toast, .no-print { display: none !important; }
+            main { overflow: visible; padding: 0; }
+            .print-only { display: block; }
+            .block { box-shadow: none; break-inside: avoid; border: 1px solid #ccc; }
+        }
+        @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+        /* ===== Ruhigere Darstellung ===== */
+        .chip { padding: 4px; }
+        .chip span { display: none; }
+        .chip.on { padding: 4px 14px 4px 4px; }
+        .chip.on span { display: inline; }
+        .chip.home { padding: 4px 10px; }
+        .s-hero .goal { background: none; padding: 0; opacity: .92; font-weight: 600; }
+        .s-hero h1 { margin-top: 0; }
+        .counter { background: none; padding: 0; color: var(--muted); font-weight: 750; font-size: .85rem; display: block; margin-bottom: 6px; }
+        .home-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+        .st-card { min-height: 56px; padding: 8px 12px; border-width: 1px; }
+        .st-card .n { width: 38px; height: 38px; font-size: 1.15rem; border-radius: 12px; }
+        .home-how { color: var(--muted); font-size: .95rem; text-align: center; margin: 18px 8px 6px; }
+        .gloss { margin: 0 4px; color: var(--muted); }
+        .gloss summary { justify-content: center; }
+        .gloss p { font-size: .95rem; }
+        .chip:not(.on) { border-color: transparent; background: transparent; }
+        .why-box { margin-top: 10px; }
+        .why-box label { display: block; font-weight: 800; margin-bottom: 4px; color: var(--ink); }
+        .why-t { width: 100%; border-radius: 12px; border: 2px solid var(--line); padding: 8px 10px; font-size: 1rem; background: #fff; resize: vertical; }
+
+        /* ===== Thema: Suchmaschinen (Indigo) ===== */
+        :root {
+            --bg: #eef2ff;
+            --hero: linear-gradient(135deg, #3730a3 0%, #5b6ef5 55%, #7c3aed 100%);
+            --hero-accent: #fbbf24;
+            --accent: #5b6ef5; --on-accent: #fff; --accent-deep: #3d50e0;
+            --soft: #e8ebff; --shadow: rgba(91,110,245,.3);
+        }
+        body { background: linear-gradient(135deg, #e0e7ff 0%, #f0fdf4 55%, #fef9c3 100%); }
+        .theory p { line-height: 1.7; }
+        .theory ul { line-height: 1.6; padding-left: 22px; margin: 0 0 10px; }
+        .theory li { margin-bottom: 8px; }
+        .theory a, .task-text a { color: var(--accent-deep); font-weight: 800; }
+        .bridge { background: #fff7d6; border-radius: 12px; padding: 10px 12px; font-weight: 700; margin-top: 10px; }
+
+        /* Crawler */
+        .legend { display: flex; gap: 12px; justify-content: center; margin-bottom: 12px; font-size: .88rem; color: var(--muted); font-weight: 700; flex-wrap: wrap; }
+        .legend span i { display: inline-block; width: 18px; height: 18px; vertical-align: middle; margin-right: 5px; border-radius: 6px; }
+        .crawler { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; max-width: 380px; margin: 0 auto; }
+        .cell { aspect-ratio: 1; background: #e0e7ff; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.7rem; cursor: pointer; border: 2px solid #fff; min-height: 60px; touch-action: manipulation; transition: transform .15s, background .15s; }
+        .cell.on { background: linear-gradient(135deg, #5b6ef5, #7c3aed); transform: scale(1.06); }
+        .cell.scan { background: linear-gradient(135deg, #bbf7d0, #86efac); border-color: #22c55e; transform: none; }
+
+        /* Such-Simulation / Ergebnisse */
+        .serp { background: #fff; border: 2px solid var(--line); border-radius: 18px; padding: 14px; }
+        .gsearch { display: flex; align-items: center; gap: 8px; border: 2px solid #dfe1e5; border-radius: 99px; padding: 6px 8px 6px 16px; background: #fff; }
+        .gsearch input { border: 0; outline: 0; flex: 1; min-width: 0; font-size: 1.05rem; min-height: 40px; background: transparent; }
+        .gsearch .q { flex: 1; font-size: 1rem; color: #202124; }
+        .glogo { font-size: 2.2rem; font-weight: 900; letter-spacing: -2px; text-align: center; margin: 4px 0 12px; }
+        .glogo .b { color: #4285f4; } .glogo .r { color: #ea4335; } .glogo .y { color: #fbbc05; } .glogo .g { color: #34a853; }
+        .res { padding: 10px 4px; border-bottom: 1px solid #f1f3f4; }
+        .res:last-child { border-bottom: 0; }
+        .res .u { color: #188038; font-size: .82rem; font-weight: 600; }
+        .res .t { color: #1a0dab; font-size: 1.05rem; font-weight: 700; display: block; }
+        .res .s { color: #4d5156; font-size: .93rem; line-height: 1.45; }
+        .spons { display: block; font-size: .72rem; font-weight: 800; color: #202124; margin-bottom: 2px; }
+        .ad-res { cursor: pointer; border-radius: 12px; transition: opacity .2s, transform .2s; touch-action: manipulation; }
+        .ad-res:active { background: #f8fafc; }
+        .ad-res.flash { background: var(--bad-soft); }
+        .ad-res.gone { opacity: 0; transform: scale(.95); }
+        .count { font-size: .85rem; color: #70757a; margin: 6px 0; }
+
+        /* Keywords */
+        .hl { font-size: 1.15rem; line-height: 2.2; }
+        .hl span { cursor: pointer; padding: 4px 7px; border-radius: 8px; display: inline-block; touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+        .hl span.sel { background: #fbbf24; font-weight: 800; }
+        .hl span.good { background: #22c55e; color: #fff; font-weight: 800; }
+        .hl span.okish { background: #bbf7d0; font-weight: 800; }
+        .hl span.bad { background: #ef4444; color: #fff; font-weight: 800; }
+
+        /* Quellen */
+        .sites { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px; }
+        .site { background: #fff; border: 2px solid var(--line); border-radius: 16px; padding: 14px; cursor: pointer; text-align: left; font: inherit; color: inherit; touch-action: manipulation; }
+        .site h4 { margin: 0 0 6px; font-size: 1rem; }
+        .site p { font-size: .93rem; margin: 0 0 8px; }
+        .site small { color: var(--muted); font-weight: 700; }
+        .site.good { border-color: #22c55e; background: #f0fdf4; }
+        .site.bad { border-color: #ef4444; background: #fff1f2; }
+        .w5 { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
+        .w5 div { background: #fff; border-radius: 12px; padding: 10px; font-size: .93rem; line-height: 1.35; border: 2px solid var(--line); }
+        .w5 b { display: block; font-size: 1rem; }
+
+        /* KI-Übersicht */
+        .ki-box { background: linear-gradient(135deg, #eef2ff, #fdf4ff); border: 1px solid #ddd6fe; border-radius: 14px; padding: 12px 14px; margin: 10px 0; }
+        .ki-box .h { font-weight: 800; font-size: .9rem; color: #6d28d9; margin-bottom: 4px; }
+        .ki-box .src { font-size: .78rem; color: var(--muted); margin-top: 6px; }
+
+        /* Bildsuche */
+        .post { background: #fff; border-radius: 16px; border: 1px solid var(--line); padding: 12px; max-width: 420px; margin: 0 auto; }
+        .post svg { width: 100%; height: auto; border-radius: 12px; display: block; margin: 8px 0; }
+        .post .h { font-weight: 800; font-size: .92rem; }
+
+        /* Suchduell */
+        .duel-card { background: linear-gradient(135deg, #312e81, #6d28d9); color: #fff; border-radius: 18px; padding: 18px; font-size: 1.2rem; font-weight: 800; text-align: center; min-height: 90px; display: flex; align-items: center; justify-content: center; }
+        .stopw { font-size: 2rem; font-weight: 900; text-align: center; font-variant-numeric: tabular-nums; }
+        table.res-t { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; font-size: .93rem; margin-top: 12px; }
+        table.res-t td, table.res-t th { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+
+        /* Vergleich */
+        .eng { background: #fff; border: 2px solid var(--line); border-radius: 16px; padding: 14px; }
+        .eng.done { border-color: #22c55e; background: #f0fdf4; }
+        .eng p { font-size: .97rem; }
+        .eng .seg .choice { min-height: 44px; padding: 8px 10px; font-size: .92rem; }
+
+        /* Webquest */
+        .src-box { background: #fff; border: 2px solid var(--line); border-radius: 16px; padding: 12px; margin-bottom: 10px; }
+        .wchk { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+        .wchk label { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 4px 10px; border-radius: 99px; border: 2px solid var(--line); font-weight: 750; font-size: .9rem; cursor: pointer; background: #fff; }
+        .wchk input { width: 20px; height: 20px; accent-color: var(--accent); }
+        textarea.txt { width: 100%; min-height: 90px; border-radius: 12px; border: 2px solid var(--line); padding: 10px 12px; font-size: 1.02rem; line-height: 1.45; resize: vertical; }
+        textarea.txt:focus { outline: none; border-color: var(--accent); }
+        .elogo { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 7px; font-weight: 900; color: #fff; margin-right: 4px; vertical-align: middle; }
+        .elogo.google { background: conic-gradient(#ea4335 0 25%, #fbbc05 0 50%, #34a853 0 75%, #4285f4 0); }
+        .elogo.bing { background: linear-gradient(135deg, #00c8a0, #008373); }
+        .elogo.qwant { background: #e11d48; }
+
+    </style>
+</head>
+<body>
+    <script>
+        /* ===== Lern-Kit: Navigation, Speichern, Lerntagebuch, Mappe ===== */
+        const K = (() => {
+            let C, S, cur = 0, leave = [], saveT, toastT;
+            const SOC = { EA: "👤 allein", PA: "👥 zu zweit", GA: "👪 in der Gruppe" };
+            const el = id => document.getElementById(id);
+            const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+            const strip = h => String(h).replace(/<[^>]+>/g, "");
+            const fresh = () => ({ won: {}, answers: {}, results: {}, data: {}, stars: {}, reasons: {}, last: 0 });
+            function load() { try { return JSON.parse(localStorage.getItem(C.key)) || {}; } catch (e) { return {}; } }
+            function save() { try { localStorage.setItem(C.key, JSON.stringify(S)); } catch (e) {} }
+            const st = n => C.stations[n - 1];
+            const ans = (s, j) => ((S.answers[s.id] || {})[j.id] || "");
+            function missing(s) {
+                const m = [];
+                if (s.mount && !S.won[s.id]) m.push(s.gameName || "Übung");
+                if ((s.journal || []).some(j => ans(s, j).trim().length < 3)) m.push("Lerntagebuch");
+                return m;
+            }
+            const isDone = s => missing(s).length === 0;
+            const starTotal = () => Object.values(S.stars).reduce((a, b) => a + b, 0);
+
+            function init(course) {
+                C = course;
+                S = Object.assign(fresh(), load());
+                S.reasons = S.reasons || {};
+                document.title = C.title;
+                document.body.insertAdjacentHTML("afterbegin", `
+                    <header class="top">
+                        <button class="brand" onclick="K.go(0)"><span class="ico">${C.icon}</span><span class="txt">${C.title}</span></button>
+                        <div class="prog"><div class="track"><div class="fill" id="k-fill"></div></div><span class="num" id="k-num"></span></div>
+                    </header>
+                    <nav class="chips" id="k-chips"></nav>
+                    <main id="k-main"></main>
+                    <footer class="foot" id="k-foot"></footer>
+                    <div class="toast" id="k-toast" role="status"></div>`);
+                document.addEventListener("click", e => {
+                    if (!e.target.closest(".vocab")) document.querySelectorAll(".vocab.open").forEach(v => v.classList.remove("open"));
+                    /* Externe Links immer im Browser-Tab öffnen (auch als Home-Bildschirm-App) */
+                    const a = e.target.closest("a[href^='http']");
+                    if (a) { e.preventDefault(); window.open(a.href, "_blank", "noopener,noreferrer"); }
+                });
+                go(0);
+            }
+
+            function chips(scroll) {
+                const n = C.stations.length;
+                const list = C.stations.map((s, i) => {
+                    const ok = isDone(s);
+                    return `<button class="chip ${cur === i + 1 ? "on" : ""} ${ok ? "ok" : ""}" onclick="K.go(${i + 1})"><b>${ok ? "✓" : i + 1}</b><span>${s.nav}</span></button>`;
+                }).join("");
+                el("k-chips").innerHTML =
+                    `<button class="chip home ${cur === 0 ? "on" : ""}" onclick="K.go(0)" aria-label="Startseite">🏠</button>${list}` +
+                    `<button class="chip ${cur === "mappe" ? "on" : ""}" onclick="K.go('mappe')"><b>📒</b><span>Mappe</span></button>`;
+                const done = C.stations.filter(isDone).length;
+                el("k-fill").style.width = (done / n * 100) + "%";
+                el("k-num").textContent = `${done}/${n}`;
+                if (scroll) { const on = el("k-chips").querySelector(".chip.on"); if (on) on.scrollIntoView({ block: "nearest", inline: "center" }); }
+            }
+
+            function foot() {
+                const f = el("k-foot"), n = C.stations.length;
+                if (cur === 0) {
+                    const resume = S.last && S.last !== "mappe" && S.last > 0 ? S.last : 0;
+                    f.innerHTML = `<span class="mid"></span>
+                        <button class="btn" onclick="K.go(${resume || 1})">${resume ? "Weiterarbeiten" : "Los geht’s"} →</button>`;
+                    return;
+                }
+                if (cur === "mappe") {
+                    f.innerHTML = `<button class="btn ghost" onclick="K.go(${n})">←<span class="hide-s"> Zurück</span></button><span class="mid"></span>
+                        <button class="btn ghost" onclick="K.go(0)">🏠<span class="hide-s"> Start</span></button>`;
+                    return;
+                }
+                const m = missing(st(cur));
+                f.innerHTML = `<button class="btn ghost" onclick="K.go(${cur - 1})">←<span class="hide-s"> Zurück</span></button>
+                    <span class="mid">${m.length ? "Noch offen: " + m.join(" + ") : "✅ Station erledigt"}</span>
+                    <button class="btn ${m.length ? "" : "ok"}" onclick="K.next()">${cur === n ? "Zur Mappe" : "Weiter"} →</button>`;
+            }
+
+            function refresh() { chips(false); foot(); }
+
+            function next() {
+                const m = missing(st(cur));
+                if (m.length) { toast("Erst noch: " + m.join(" + ")); return; }
+                go(cur === C.stations.length ? "mappe" : cur + 1);
+            }
+
+            function go(n) {
+                leave.forEach(f => { try { f(); } catch (e) {} });
+                leave = [];
+                cur = n;
+                if (n !== 0) { S.last = n; save(); }
+                if (n === 0) home(); else if (n === "mappe") mappe(); else station(n);
+                el("k-main").scrollTop = 0;
+                chips(true); foot();
+            }
+
+            function block(kind, icon, title, html) {
+                return `<section class="block ${kind}"><div class="bh"><span class="bi">${icon}</span>${title}</div>${html}</section>`;
+            }
+
+            function station(n) {
+                const s = st(n);
+                el("k-main").innerHTML = `<div class="wrap">
+                    <section class="s-hero">
+                        <h1>${s.icon} ${s.title}</h1>
+                        <p class="goal">🎯 ${s.goal}</p>
+                    </section>
+                    ${s.body()}
+                    ${journal(s)}
+                </div>`;
+                if (s.mount) s.mount(api(s));
+                el("k-main").querySelectorAll("textarea[data-j]").forEach(t => t.addEventListener("input", () => {
+                    S.answers[s.id] = S.answers[s.id] || {};
+                    S.answers[s.id][t.dataset.j] = t.value;
+                    clearTimeout(saveT); saveT = setTimeout(save, 300);
+                    refresh();
+                }));
+            }
+
+            function journal(s) {
+                if (!s.journal || !s.journal.length) return "";
+                return block("journal", "✏️", "Lerntagebuch",
+                    `<p class="muted">Schreib direkt in die Kästen. Alles landet am Ende in deiner <b>Mappe</b>.</p>` +
+                    s.journal.map(j => `<div class="jq"><label for="j-${s.id}-${j.id}">${j.q}</label>
+                        <textarea id="j-${s.id}-${j.id}" data-j="${j.id}" placeholder="${esc(j.ph || "")}">${esc(ans(s, j))}</textarea></div>`).join(""));
+            }
+
+            function api(s) {
+                return {
+                    win(stars) {
+                        const first = !S.won[s.id];
+                        S.won[s.id] = true;
+                        if (stars && stars > (S.stars[s.id] || 0)) S.stars[s.id] = stars;
+                        save(); refresh();
+                        if (first) toast("Übung erledigt." + (s.journal && s.journal.length ? " Jetzt noch das Lerntagebuch." : ""));
+                    },
+                    won: () => !!S.won[s.id],
+                    result(t) { S.results[s.id] = t; save(); },
+                    get(k) { return (S.data[s.id] || {})[k]; },
+                    set(k, v) { S.data[s.id] = S.data[s.id] || {}; S.data[s.id][k] = v; save(); },
+                    onLeave(f) { leave.push(f); },
+                    toast
+                };
+            }
+
+            function home() {
+                const parts = C.parts || [{ label: "", from: 1, to: C.stations.length }];
+                const card = (s, n) => `<button class="st-card ${isDone(s) ? "ok" : ""}" onclick="K.go(${n})">
+                    <span class="n">${isDone(s) ? "✓" : s.icon}</span><span class="t">${s.title}</span></button>`;
+                el("k-main").innerHTML = `<div class="wrap">
+                    <section class="s-hero home-hero">
+                        <div class="big-ico">${C.icon}</div>
+                        <h1>${C.title}</h1>
+                        <p class="lead">${C.lead}</p>
+                        ${C.stars && starTotal() ? `<div class="stars-total">⭐ ${starTotal()}</div>` : ""}
+                    </section>
+                    ${parts.map(p => `${p.label ? `<div class="part-h">${p.label}</div>` : ""}<div class="home-grid">${C.stations.slice(p.from - 1, p.to).map((s, i) => card(s, p.from + i)).join("")}</div>`).join("")}
+                    <p class="home-how">An jeder Station: Übung lösen, Lerntagebuch schreiben. Am Ende alles aus der 📒 Mappe als PDF sichern${C.submit ? " und " + C.submit : ""}.</p>
+                    ${C.glossary ? `<details class="gloss"><summary>Begriffe</summary>${C.glossary.map(([w, d]) => `<p><b>${w}:</b> ${d}</p>`).join("")}</details>` : ""}
+                    ${C.homeExtra || ""}
+                    <p class="center"><button class="linkish" onclick="K.reset()">Alles löschen und neu anfangen</button></p>
+                </div>`;
+            }
+
+            function mappe() {
+                el("k-main").innerHTML = `<div class="wrap">
+                    <section class="s-hero no-print">
+                        <h1>📒 Meine Mappe</h1>
+                        <p class="goal">Hier steht alles, was du herausgefunden und geschrieben hast.</p>
+                        <div class="actions"><button class="btn white" onclick="K.copy()">📋 Alles kopieren</button><button class="btn white" onclick="window.print()">🖨️ Als PDF sichern</button></div>
+                    </section>
+                    <div class="print-only"><h1>${C.title} – Mappe</h1></div>
+                    ${C.stations.map((s, i) => block("m-st", isDone(s) ? "✅" : s.icon, `${i + 1} · ${s.title}`,
+                        (S.results[s.id] ? `<p class="m-res">📊 ${esc(S.results[s.id])}</p>` : "") +
+                        (S.reasons[s.id] || []).map(r => `<div class="m-q"><b>Begründung: ${esc(r.q)}</b><p>${esc(r.a)}</p></div>`).join("") +
+                        ((s.journal || []).map(j => `<div class="m-q"><b>${j.q}</b><p>${esc(ans(s, j).trim()) || '<span class="muted">– noch leer –</span>'}</p></div>`).join("") ||
+                            (S.results[s.id] || (S.reasons[s.id] || []).length ? "" : '<p class="muted">Hier gibt es nichts zu schreiben.</p>')))).join("")}
+                    <section class="block no-print"><details><summary>📄 So sicherst du die PDF auf dem iPad</summary>
+                        <ol class="steps">
+                            <li>Tippe oben auf <b>🖨️ Als PDF sichern</b>.</li>
+                            <li>Im Druck-Fenster oben auf das <b>Teilen-Symbol</b> (Kasten mit Pfeil) tippen.</li>
+                            <li><b>In Dateien sichern</b> wählen und als Namen <i>${C.title}</i> eingeben.</li>
+                            ${C.submit ? `<li>Die PDF ${C.submit}.</li>` : ""}
+                        </ol>
+                        <p class="muted">Oder: <b>Alles kopieren</b> und in Pages oder Goodnotes einfügen.</p>
+                    </details></section>
+                </div>`;
+            }
+
+            function copy() {
+                let t = C.title + " – Mappe\n\n";
+                C.stations.forEach((s, i) => {
+                    t += `${i + 1}. ${strip(s.title)}\n`;
+                    if (S.results[s.id]) t += "Ergebnis: " + S.results[s.id] + "\n";
+                    (S.reasons[s.id] || []).forEach(r => { t += "• Begründung: " + r.q + "\n  " + r.a + "\n"; });
+                    (s.journal || []).forEach(j => { t += "• " + strip(j.q) + "\n  " + (ans(s, j).trim() || "–") + "\n"; });
+                    t += "\n";
+                });
+                const ok = () => toast("📋 Kopiert! Jetzt in Pages oder Goodnotes einfügen.");
+                const fallback = () => {
+                    const a = document.createElement("textarea");
+                    a.value = t; a.setAttribute("readonly", ""); a.style.position = "fixed"; a.style.opacity = "0";
+                    document.body.appendChild(a); a.select(); a.setSelectionRange(0, t.length);
+                    try { document.execCommand("copy"); ok(); } catch (e) { toast("Kopieren ging nicht – nimm „Als PDF sichern“."); }
+                    a.remove();
+                };
+                if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok, fallback);
+                else fallback();
+            }
+
+            function reset() {
+                if (!confirm("Wirklich alles löschen? Deine Antworten sind dann weg.")) return;
+                S = fresh(); save(); go(0);
+            }
+
+            function toast(msg) {
+                const t = el("k-toast");
+                t.textContent = msg; t.classList.add("show");
+                clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 2800);
+            }
+
+            const v = (word, def) => `<button type="button" class="vocab" onclick="K.vt(this)">${word}<span class="tip">${def}</span></button>`;
+            function vt(btn) {
+                document.querySelectorAll(".vocab.open").forEach(x => { if (x !== btn) x.classList.remove("open"); });
+                btn.classList.toggle("open");
+            }
+
+            /* Karten nacheinander zuordnen. items: {t, a, why, labels?}; labels: {key: text} */
+            function cards(rootId, items, labels, done, opts) {
+                opts = opts || {};
+                const root = el(rootId);
+                let i = 0, right = 0;
+                const paint = () => {
+                    if (!root.isConnected) return;
+                    if (i >= items.length) {
+                        root.innerHTML = `<div class="done-box">${right} von ${items.length} auf Anhieb richtig.${opts.end ? "<br>" + opts.end : ""}</div>`;
+                        if (done) done(right, items.length);
+                        return;
+                    }
+                    const it = items[i];
+                    root.innerHTML = `<span class="counter">${opts.unit || "Karte"} ${i + 1} von ${items.length}</span>
+                        <div class="tile big-tile">${it.t}</div>
+                        <div>${Object.entries(it.labels || labels).map(([k, l]) => `<button class="choice" data-k="${k}">${l}</button>`).join("")}</div>
+                        <div class="fb"></div>`;
+                    root.querySelectorAll(".choice").forEach(b => b.onclick = () => {
+                        root.querySelectorAll(".choice").forEach(x => x.disabled = true);
+                        const ok = b.dataset.k === String(it.a);
+                        if (ok) right++;
+                        b.classList.add(ok ? "good" : "bad");
+                        if (!ok) root.querySelector(`.choice[data-k="${it.a}"]`).classList.add("good");
+                        const fb = root.querySelector(".fb");
+                        fb.className = "fb show " + (ok ? "good" : "bad");
+                        fb.innerHTML = (ok ? "✓ Richtig. " : "✗ Nicht ganz. ") + (it.why || "") +
+                            (it.reason ? `<div class="why-box"><label>Warum? Begründe in eigenen Worten (landet in der Mappe).</label><textarea class="why-t" rows="2"></textarea></div>` : "") +
+                            `<div class="fb-next"><button class="btn small" ${it.reason ? "disabled" : ""}>${i + 1 < items.length ? "Weiter" : "Fertig"} →</button></div>`;
+                        const nb = fb.querySelector(".fb-next button"), ta = fb.querySelector(".why-t");
+                        if (ta) ta.oninput = () => nb.disabled = ta.value.trim().length < 8;
+                        nb.onclick = () => {
+                            if (ta) addReason(strip(it.t).replace(/\s+/g, " ").trim().slice(0, 140), ta.value.trim());
+                            i++; paint();
+                        };
+                    });
+                };
+                paint();
+            }
+
+            /* Multiple Choice. qs: {q, options: [[text, true/false]], why} */
+            function quiz(rootId, qs, done, opts) {
+                cards(rootId, qs.map(q => ({
+                    t: q.q,
+                    labels: Object.fromEntries(q.options.map((o, k) => [k, o[0]])),
+                    a: q.options.findIndex(o => o[1]),
+                    why: q.why, reason: q.reason
+                })), null, done, Object.assign({ unit: "Frage" }, opts || {}));
+            }
+
+            function addReason(q, a) {
+                if (typeof cur !== "number" || cur < 1) return;
+                const id = st(cur).id, list = S.reasons[id] = (S.reasons[id] || []).filter(r => r.q !== q);
+                list.push({ q, a }); save();
+            }
+
+            const euro = cents => (cents / 100).toFixed(2).replace(".", ",") + " €";
+
+            return { init, go, next, reset, copy, toast, vt, v, block, cards, quiz, esc, euro };
+        })();
+
+        /* ===== Suchmaschinen kennenlernen: Inhalte ===== */
+        const B = K.block;
+        const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+        const starsFor = fails => fails === 0 ? 3 : fails === 1 ? 2 : 1;
+        const fb = (msg, ok) => { const e = document.getElementById("g-fb"); e.className = "fb show " + (ok ? "good" : "bad"); e.textContent = msg; };
+        /* iPad-Tastatur setzt „ “ ” statt " – alles auf " vereinheitlichen */
+        const normQ = s => s.toLowerCase().replace(/[„“”«»‚‘’]/g, '"').replace(/\s+/g, " ").trim();
+        const glogo = `<div class="glogo"><span class="b">G</span><span class="r">o</span><span class="y">o</span><span class="b">g</span><span class="g">l</span><span class="r">e</span></div>`;
+
+        /* Baukasten für eine Lektion: Theorie → echter Auftrag → Übung */
+        const lesson = L => B("learn", "📖", L.learnTitle, `<div class="theory">${L.theory}</div>`) +
+            B("task", "🌍", "Dein Auftrag im echten Internet", `<p class="task-text">${L.task}</p>${L.hint ? `<details><summary>💡 Tipp anzeigen</summary><p>${L.hint}</p></details>` : ""}`) +
+            B("play", "🎮", L.gameTitle, `<p>${L.instr}</p><div id="g"></div><div class="fb" id="g-fb"></div>`) + (L.extra || "");
+
+        const KEYWORDS = [
+            { text: "Warum baut Steve in Minecraft eine Festung – schützt sie wirklich vor Creepern und Zombies?", k: 4, correct: ["minecraft", "festung", "creepern", "zombies"], ok: ["steve", "schützt"] },
+            { text: "Hallo, kannst du mir bitte sagen, wie schwer ein afrikanischer Elefant eigentlich ist?", k: 3, correct: ["schwer", "afrikanischer", "elefant"], ok: [] },
+            { text: "Ich muss für Bio herausfinden, wie lange eine Schildkröte ohne Futter überleben kann.", k: 3, correct: ["schildkröte", "futter", "überleben"], ok: ["ohne", "lange"] },
+            { text: "Weißt du, wann der SV Werder Bremen zum letzten Mal deutscher Meister geworden ist?", k: 3, correct: ["werder", "bremen", "meister"], ok: ["letzten", "deutscher"] },
+            { text: "Zeig mir bitte ein einfaches Rezept für Pfannkuchen ohne Ei, das schnell geht.", k: 3, correct: ["rezept", "pfannkuchen", "ei"], ok: ["ohne", "einfaches", "schnell"] }
+        ];
+
+        const SOURCE_SETS = [
+            { topic: "Gesunde Ernährung", sites: [
+                { title: "VitalWissen.de – Gesund ernähren", text: "Vitamine sind der Schlüssel zu einem gesunden Leben. Eine ausgewogene Ernährung stärkt das Immunsystem.", author: "Redaktion VitalWissen (kein Autor genannt) · zuletzt aktualisiert 2009", good: false, why: "Klingt gut, aber: kein Autorenname und von 2009. Wer? und Wann? sind nicht erfüllt." },
+                { title: "Dr. med. Sara Klein – Ernährungsmedizin", text: "Studien zeigen: Abwechslungsreiche Ernährung mit Gemüse, Obst und Vollkorn deckt den Vitaminbedarf meist ab.", author: "Dr. med. Sara Klein, Fachärztin für Ernährungsmedizin · April 2025", good: true, why: "Expertin mit Namen, aktuell, sachlich, nennt Studien und will nichts verkaufen." },
+                { title: "NaturPur-Shop: Vitamine kaufen", text: "Natürliche Vitamin-Kapseln für deine Gesundheit. Jetzt bestellen und 20 % sparen!", author: "Marketing-Team NaturPur", good: false, why: "Ein Shop – hier geht es ums Verkaufen, nicht ums Informieren (Wozu?)." },
+                { title: "Forum Eltern.de: Was essen?", text: "Mutti123 schreibt: Meine Kinder kriegen täglich Vitamin-C-Tabletten, hat der Nachbar empfohlen!", author: "Forenbenutzerin Mutti123", good: false, why: "Im Forum kann jeder schreiben – ohne Fachwissen und ohne Belege (Wer? Woher?)." } ] },
+            { topic: "Hamster als Haustier", sites: [
+                { title: "Kevins Hamster-Blog", text: "Mein Hamster frisst am liebsten Schokolade! Probiert das unbedingt aus!!!", author: "Kevin, 14 · 2016", good: false, why: "Privater Blog, alt – und gefährlich falsch: Schokolade ist giftig für Hamster." },
+                { title: "Tierschutzbund – Hamster richtig halten", text: "Hamster sind nachtaktiv und brauchen ein großes Gehege mit viel Einstreu zum Graben.", author: "Redaktion Heimtiere, Deutscher Tierschutzbund e. V. · 2024", good: true, why: "Bekannter Verein mit Fachredaktion, aktuell und sachlich." },
+                { title: "ZooKing: Hamsterkäfig XXL", text: "Der perfekte Käfig für deinen Hamster – nur heute 30 % günstiger! Jetzt in den Warenkorb.", author: "ZooKing Online-Shop", good: false, why: "Ein Shop will verkaufen. „Nur heute“ ist Zeitdruck." },
+                { title: "Frag-mich-alles-Forum", text: "Hamster brauchen kein Laufrad, sagt mein Opa.", author: "User „derOnkel77“ · ohne Datum", good: false, why: "Keine Belege, kein Datum, unbekannter Autor." } ] },
+            { topic: "Vulkane", sites: [
+                { title: "MEGA-FAKTEN-TV", text: "SCHOCK!!! Riesen-Vulkan unter Bremen könnte MORGEN ausbrechen!!!", author: "unbekannt · 2025", good: false, why: "Reißerisch (Wie?), keine Belege (Woher?), kein Autor (Wer?) – Clickbait." },
+                { title: "Geo-Lexikon für Kinder – Vulkane", text: "Vulkane entstehen dort, wo heißes, flüssiges Gestein aus dem Erdinneren an die Oberfläche steigt.", author: "Dr. Jonas Berg, Geologe · Februar 2025", good: true, why: "Fachmann mit Namen, aktuell, sachlich erklärt." },
+                { title: "Vulkan-Reisen.de", text: "Buche jetzt deine Vulkan-Tour nach Island – Frühbucher sparen 15 %!", author: "Vulkan-Reisen GmbH", good: false, why: "Ein Reiseanbieter will verkaufen (Wozu?)." },
+                { title: "Lava-Land Spiele-Wiki", text: "Im Spiel Lava-Land sind alle Vulkane aus Schokolade.", author: "Fans des Spiels", good: false, why: "Das ist ein Spiel, kein Sachtext." } ] }
+        ];
+
+        const DUEL = [
+            ["In welchem Jahr fiel die Berliner Mauer?", "1989"],
+            ["Wie heißt die Hauptstadt von Australien?", "Canberra"],
+            ["Wie viele Knochen hat ein erwachsener Mensch?", "206"],
+            ["Wie schnell kann ein Gepard laufen?", "über 100 km/h"],
+            ["Wie hoch ist die Zugspitze?", "2.962 m"],
+            ["Wer hat das Märchen „Die Bremer Stadtmusikanten“ aufgeschrieben?", "die Brüder Grimm"],
+            ["Wie viele Monde hat der Mars?", "2 (Phobos und Deimos)"],
+            ["Wie alt können Riesenschildkröten werden?", "über 150 Jahre"],
+            ["In welchem Jahr wurde das erste iPhone vorgestellt?", "2007"],
+            ["Wie lang ist die Weser ungefähr?", "rund 450 km"]
+        ];
+
+        const KI_ROUNDS = [
+            { q: "wie viele beine hat eine spinne", ki: "Spinnen haben 6 Beine, genau wie alle anderen Insekten.", src: "Quellen: 2 Webseiten", a: 1,
+              res: [["de.wikipedia.org", "Spinnen – Wikipedia", "Spinnen sind keine Insekten. Sie haben acht Beine und gehören zu den Spinnentieren."], ["www.tierlexikon-kinder.de", "Spinnen einfach erklärt", "Alle Spinnen haben 8 Beine. Insekten haben 6."]],
+              why: "Die KI hat Spinnen mit Insekten verwechselt. Beide Treffer sagen: 8 Beine." },
+            { q: "wie hoch ist die zugspitze", ki: "Die Zugspitze ist mit 2.962 Metern der höchste Berg Deutschlands.", src: "Quellen: 2 Webseiten", a: 0,
+              res: [["de.wikipedia.org", "Zugspitze – Wikipedia", "Die Zugspitze ist mit 2962 m der höchste Gipfel Deutschlands."], ["www.berge-lexikon.de", "Zugspitze: Steckbrief", "Höhe: 2.962 Meter. Lage: Bayern, an der Grenze zu Österreich."]],
+              why: "Die KI-Antwort stimmt: Zwei verschiedene Treffer sagen dasselbe." },
+            { q: "käse rutscht von der pizza", ki: "Mische etwa 1/8 Tasse ungiftigen Kleber in die Tomatensoße. So bleibt der Käse besser haften.", src: "Quelle: ein alter Witz-Beitrag in einem Forum", a: 1,
+              res: [["www.kochen-lernen.de", "Warum rutscht der Käse von der Pizza?", "Zu viel Soße? Lass die Pizza nach dem Backen kurz ruhen – dann hält der Käse."], ["www.giftinfo-kinder.de", "Ist Bastelkleber essbar?", "Nein! Kleber ist kein Lebensmittel und darf nicht gegessen werden."]],
+              why: "Kleber gehört nicht ins Essen! Die KI hat einen Witz aus einem Forum für echt gehalten. Das ist 2024 bei Google wirklich so passiert." }
+        ];
+
+        const STATIONS = [
+            {
+                id: "crawler", nav: "Crawler", icon: "🕷️", title: "Wie Google funktioniert", time: "15 min", social: ["EA"],
+                goal: "Du kannst erklären, wie eine Suchmaschine mit Crawlern und Index so schnell Ergebnisse findet.",
+                gameName: "Crawler-Spiel",
+                body: () => lesson({
+                    learnTitle: "Google sucht nicht jetzt – Google hat schon gesucht",
+                    theory: `<p>Wenn du etwas suchst, bekommst du Millionen Ergebnisse in weniger als einer Sekunde. Wie geht das?</p>
+                        <p>Das Geheimnis: <b>Google sucht gar nicht in diesem Moment im Internet.</b> Das würde viel zu lange dauern – es gibt Milliarden Webseiten.</p>
+                        <p>Stattdessen schickt Google Programme los, die ${K.v("Crawler", "Englisch für „Krabbler“: Programme, die Tag und Nacht Webseiten besuchen und lesen.")} heißen. Sie besuchen Webseiten, lesen den Text und speichern ihn in einem riesigen Katalog, dem ${K.v("Index", "Der riesige Katalog aller gelesenen Webseiten. Wenn du googelst, blätterst du darin.")}. Das kann ein paar Tage dauern. Wenn du googelst, blätterst du nur in diesem Katalog.</p>
+                        <p><b>Und das Internet?</b> Das sind Computer auf der ganzen Welt, verbunden über Funk und Kabel (oft unter dem Meer). Jeder mit Internetzugang und einem erreichbaren Computer kann etwas ins Internet stellen.</p>`,
+                    task: "Öffne einen neuen Tab. Suche nach einem Wort, das es gar nicht gibt (denk dir eins aus, z. B. „Schlumpfhausenbrot123“). Wie viele Ergebnisse findest du? Warum?",
+                    hint: "Der Crawler braucht Zeit, um neue Dinge zu finden. Dein Fantasiewort steht noch in keinem Katalog der Welt – vielleicht nie, weil es niemand ins Internet schreibt.",
+                    gameTitle: "Du bist der Crawler!",
+                    instr: "Tippe die Felder an und finde die <b>4 neuen Webseiten</b> für den Index."
+                }),
+                mount(api) {
+                    const g = document.getElementById("g"), targets = new Set();
+                    while (targets.size < 4) targets.add(Math.floor(Math.random() * 16));
+                    let found = 0, taps = 0;
+                    g.innerHTML = `<div class="legend"><span><i style="background:#e0e7ff"></i>Seite im Netz</span><span><i style="background:#86efac"></i>gelesen</span><span>📄 neue Seite</span></div><div class="crawler" id="cg"></div>`;
+                    const cg = document.getElementById("cg");
+                    for (let i = 0; i < 16; i++) {
+                        const c = document.createElement("div");
+                        c.className = "cell";
+                        c.onclick = () => {
+                            if (c.classList.contains("on")) return;
+                            c.classList.add("on"); taps++;
+                            setTimeout(() => {
+                                c.classList.add("scan");
+                                c.textContent = targets.has(i) ? "📄" : "🕸️";
+                                if (targets.has(i) && ++found === 4) {
+                                    fb(`Alle neuen Seiten im Index! Du hast ${taps} Seiten gelesen – echte Crawler lesen Milliarden.`, true);
+                                    api.win(3);
+                                }
+                            }, 200);
+                        };
+                        cg.appendChild(c);
+                    }
+                },
+                journal: [
+                    { id: "a", q: "Warum findet dein Freund deine neue Webseite morgen vielleicht noch nicht bei Google?" },
+                    { id: "t", q: "🌍 Ergebnis deines Auftrags: Wie viele Treffer hatte dein Fantasiewort – und warum?" }
+                ]
+            },
+            {
+                id: "werbung", nav: "Werbung", icon: "📢", title: "Werbung erkennen", time: "15 min", social: ["EA"],
+                goal: "Du kannst gesponserte Treffer von normalen Suchergebnissen unterscheiden und erklären, warum Werbung oben steht.",
+                gameName: "Werbe-Spiel",
+                body: () => lesson({
+                    learnTitle: "Wie verdient Google Geld?",
+                    theory: `<p>Suchmaschinen wie Google, Bing oder Ecosia sind Firmen. Die Suche ist für dich kostenlos – Geld verdienen sie mit <b>Werbung</b>.</p>
+                        <p>Firmen bezahlen, damit ihre Seite <b>ganz oben</b> steht. Darüber steht dann klein <b>„Gesponsert“</b>. Das ist erlaubt – aber du musst es erkennen!</p>
+                        <p>Darunter kommen die ${K.v("organischen Treffer", "Ergebnisse, die Google für passend hält – ohne dass jemand dafür bezahlt hat.")}.</p>
+                        <div class="bridge">💡 Kennst du schon aus „Werbung in Apps“: „Gesponsert“ heißt, jemand hat bezahlt. Bei Google ist es genauso.</div>`,
+                    task: "Suche bei Google nach „Sneaker kaufen“. Zähle, wie viele Anzeigen ganz oben stehen, bevor das erste echte Ergebnis kommt.",
+                    gameTitle: "Räum die Werbung weg",
+                    instr: "Tippe alle Ergebnisse weg, die <b>Werbung</b> sind. Die echten Treffer bleiben stehen!"
+                }),
+                mount(api) {
+                    const data = shuffle([
+                        { ad: true, t: "Schuhe BILLIG – SuperSale24", u: "www.supersale24.de", s: "Nur heute 50 % Rabatt." },
+                        { ad: false, t: "Laufschuhe im Test: Das sind die besten", u: "www.sport-magazin.de", s: "Wir haben 20 Schuhe getestet." },
+                        { ad: true, t: "Bester Sneaker-Shop Bremen", u: "www.shop-ad.de", s: "Komm vorbei – große Auswahl." },
+                        { ad: false, t: "Die Geschichte des Turnschuhs", u: "de.wikipedia.org", s: "Der Turnschuh wurde im 19. Jahrhundert erfunden …" },
+                        { ad: true, t: "Sneaker-Outlet – bis zu 70 % reduziert", u: "www.outlet-sneaker.de", s: "Gratis-Versand ab 30 €." },
+                        { ad: false, t: "Sneaker reinigen – so geht’s", u: "www.schuhpflege-tipps.de", s: "Mit Zahnbürste und Seifenwasser werden sie wieder weiß." }
+                    ]);
+                    const g = document.getElementById("g");
+                    let left = data.filter(d => d.ad).length, fails = 0;
+                    g.innerHTML = `<div class="serp"><div class="gsearch"><span>🔍</span><span class="q">sneaker kaufen</span></div><div id="ads"></div></div>`;
+                    const box = document.getElementById("ads");
+                    data.forEach(d => {
+                        const e = document.createElement("div");
+                        e.className = "res ad-res";
+                        e.innerHTML = `${d.ad ? `<span class="spons">Gesponsert</span>` : ""}<span class="u">${d.u}</span><span class="t">${d.t}</span><span class="s">${d.s}</span>`;
+                        e.onclick = () => {
+                            if (e.classList.contains("gone")) return;
+                            if (d.ad) {
+                                e.classList.add("gone"); setTimeout(() => e.style.display = "none", 200);
+                                if (--left === 0) { fb("✓ Alle Anzeigen weg – übrig sind nur echte Treffer.", true); api.win(starsFor(fails)); }
+                            } else {
+                                fails++; e.classList.add("flash"); setTimeout(() => e.classList.remove("flash"), 900);
+                                fb("Das ist ein echtes Ergebnis – da steht kein „Gesponsert“.", false);
+                            }
+                        };
+                        box.appendChild(e);
+                    });
+                },
+                journal: [
+                    { id: "a", q: "Woran erkennst du bei Google sicher, dass ein Treffer Werbung ist?" },
+                    { id: "b", q: "Würdest du für ein Referat eher eine Anzeige oder einen normalen Treffer nehmen? Warum?" },
+                    { id: "t", q: "🌍 Ergebnis deines Auftrags: Wie viele Anzeigen standen bei „Sneaker kaufen“ vor dem ersten echten Treffer?" }
+                ]
+            },
+            {
+                id: "keywords", nav: "Keywords", icon: "🔑", title: "Schlüsselwörter", time: "15 min", social: ["EA"],
+                goal: "Du kannst aus einer langen Frage die wichtigsten Suchwörter auswählen.",
+                gameName: "Keyword-Spiel",
+                body: () => lesson({
+                    learnTitle: "Wenige Wörter, bessere Treffer",
+                    theory: `<p>Viele tippen ganze Sätze in die Suche, als würden sie mit einem Menschen chatten: <i>„Hallo lieber Computer, sag mir doch bitte mal, wie schwer ein afrikanischer Elefant ist.“</i></p>
+                        <p>Ehrlich gesagt: Google versteht inzwischen auch ganze Fragen ziemlich gut. Trotzdem lohnen sich ${K.v("Keywords", "Schlüsselwörter: die wenigen Wörter, auf die es bei der Suche ankommt.")}: Du bist schneller, kannst gezielt nachschärfen – und musst selbst klären, <b>worauf es eigentlich ankommt</b>. Statt des langen Satzes reicht: <b>Gewicht Elefant Afrika</b>.</p>
+                        <p>Tippfehler sind meist nicht schlimm – Google korrigiert kleine Fehler automatisch.</p>`,
+                    task: "Vergleichstest: Suche einmal nach „Wie wird morgen das Wetter in Bremen sein“ und einmal nur nach „Wetter Bremen“. Kommt dasselbe heraus? Was ging schneller?",
+                    gameTitle: "Markiere die Keywords",
+                    instr: "Tippe in jedem Satz die wichtigsten Wörter an. Drei Runden – jedes Mal ein anderer Satz."
+                }),
+                mount(api) {
+                    const g = document.getElementById("g"), rounds = shuffle(KEYWORDS).slice(0, 3);
+                    let r = 0, fails = 0;
+                    const clean = w => w.toLowerCase().replace(/[.,?!–:;„“"]/g, "");
+                    const paint = () => {
+                        if (r >= rounds.length) { fb("✓ Alle drei Sätze geschafft.", true); api.win(starsFor(fails)); g.innerHTML = `<div class="done-box">Alle drei Sätze geschafft.</div>`; return; }
+                        const R = rounds[r];
+                        g.innerHTML = `<span class="counter">Satz ${r + 1} von ${rounds.length} · markiere ${R.k} Wörter</span>
+                            <div class="hl">${R.text.split(" ").map(w => clean(w) ? `<span data-w="${clean(w)}">${w}</span>` : w).join(" ")}</div>
+                            <div class="actions"><button class="btn" id="kw-ok">Prüfen</button></div>`;
+                        g.querySelectorAll(".hl span").forEach(s => s.onclick = () => s.classList.toggle("sel"));
+                        document.getElementById("kw-ok").onclick = () => {
+                            const sel = [...g.querySelectorAll(".hl span.sel")];
+                            if (sel.length !== R.k) { fb(`Markiere genau ${R.k} Wörter – du hast ${sel.length}.`, false); return; }
+                            let good = 0, bad = 0;
+                            sel.forEach(s => {
+                                const w = s.dataset.w; s.classList.remove("sel");
+                                if (R.correct.includes(w)) { good++; s.classList.add("good"); }
+                                else if (R.ok.includes(w)) s.classList.add("okish");
+                                else { bad++; s.classList.add("bad"); }
+                            });
+                            if (bad === 0 && good >= R.k - 1) {
+                                fb(`✓ Gut gewählt. Eine knappe Suche wäre: ${R.correct.join(" ")}`, true);
+                                document.getElementById("kw-ok").outerHTML = `<button class="btn" id="kw-next">${r + 1 < rounds.length ? "Nächster Satz" : "Fertig"} →</button>`;
+                                document.getElementById("kw-next").onclick = () => { r++; document.getElementById("g-fb").className = "fb"; paint(); };
+                            } else {
+                                fails++;
+                                fb("Noch nicht ganz. Rote Wörter sind Füllwörter oder unwichtig. Versuch es nochmal.", false);
+                                setTimeout(() => g.querySelectorAll(".hl span").forEach(s => s.classList.remove("good", "okish", "bad")), 1800);
+                            }
+                        };
+                    };
+                    paint();
+                },
+                journal: [
+                    { id: "a", q: "Du suchst ein Rezept für Waffeln ohne Zucker. Welche Keywords gibst du ein?" },
+                    { id: "b", q: "Warum lässt du Füllwörter wie „bitte“ oder „der, die, das“ weg?" },
+                    { id: "t", q: "🌍 Ergebnis deines Auftrags: Kam bei „Wetter Bremen“ und dem langen Satz dasselbe heraus?" }
+                ]
+            },
+            {
+                id: "quotes", nav: "Operatoren", icon: "❝", title: "Anführungszeichen und site:", time: "15 min", social: ["EA"],
+                goal: "Du kannst mit Anführungszeichen und site: gezielt suchen und einschätzen, wann sich das lohnt.",
+                gameName: "Such-Simulation",
+                body: () => lesson({
+                    learnTitle: "Genau diesen Satz, bitte!",
+                    theory: `<p>Manchmal liefert Google Millionen Ergebnisse, aber viele passen nicht. Mit <b>Anführungszeichen</b> sagst du Google: <i>Finde genau diesen Satz – kein Wort anders, keine andere Reihenfolge!</i></p>
+                        <p>Beispiel: <b>König der Löwen 1994</b> ohne Anführungszeichen zeigt auch das Remake von 2019 und das Musical. Mit <b>"König der Löwen" 1994</b> kommst du viel genauer zum Originalfilm.</p>
+                        <p>Das hilft bei Filmtiteln, Songtexten und genauen Zitaten.</p>
+                        <p><b>Tipp fürs iPad:</b> Anführungszeichen findest du über die Taste <b>123</b>.</p>
+                        <p><b>Der zweite Trick: site:</b> Damit suchst du nur auf einer bestimmten Webseite. <b>site:klexikon.zum.de vulkan</b> zeigt nur Treffer aus dem Klexikon. Wichtig: <b>kein Leerzeichen</b> nach dem Doppelpunkt.</p>
+                        <div class="bridge"><b>Brauche ich das überhaupt noch?</b> Für die meisten Fragen reicht eine normale Suche – Google versteht viel. Operatoren lohnen sich, wenn die Treffer nicht passen: bei genauen Titeln, Zitaten oder wenn du nur einer bestimmten Seite traust. Die KI-Übersicht oben beachtet sie meist gar nicht.</div>`,
+                    task: "Suche bei Google nach <b>König der Löwen</b>. Dann nach <b>\"König der Löwen\" 1994</b>. Was ändert sich? Probiere danach <b>site:wikipedia.org Löwe</b> – woher kommen jetzt alle Treffer?",
+                    gameTitle: "Such-Simulator",
+                    instr: "Gib die Suche so ein, dass nur das Richtige kommt. Drei Aufgaben."
+                }),
+                mount(api) {
+                    const stages = [
+                        { mission: "Finde nur den Originalfilm „König der Löwen“ von 1994.",
+                          success: v => v.includes('"') && /k(ö|oe)nig der l(ö|oe)wen/.test(v), partial: v => /k(ö|oe)nig|l(ö|oe)wen/.test(v),
+                          good: [["„König der Löwen“ (1994) – Originalfilm", "Das Meisterwerk von 1994 mit Simba, Timon und Pumbaa."], ["König der Löwen (1994) – Wikipedia", "Ein US-amerikanischer Zeichentrickfilm aus dem Jahr 1994."]],
+                          bad: [["König der Löwen 2019 – Remake", "Das neue CGI-Remake mit realistischen Tieren."], ["König der Löwen – Musical Hamburg", "Das weltberühmte Bühnenstück. Jetzt Tickets buchen!"]],
+                          partialMsg: "Fast! Ohne Anführungszeichen mischen sich Remake und Musical rein.", wrongMsg: "Tipp: Schreib König der Löwen in Anführungszeichen, dahinter 1994." },
+                        { mission: "Du kennst nur diesen Satz aus einem Gedicht: Dunkel war’s, der Mond schien helle. Finde das Gedicht.",
+                          success: v => v.includes('"') && /dunkel war/.test(v) && /mond/.test(v), partial: v => /dunkel|mond/.test(v),
+                          good: [["„Dunkel war’s, der Mond schien helle“ – Unsinnsgedicht", "Ein bekanntes Scherzgedicht voller Widersprüche."], ["Das Gedicht zum Nachlesen", "Dunkel war’s, der Mond schien helle, schneebedeckt die grüne Flur …"]],
+                          bad: [["Mondkalender 2026", "Wann ist Vollmond? Alle Mondphasen im Überblick."], ["Dunkle Möbel kaufen", "Sofas und Schränke in dunklen Farben – jetzt bestellen."]],
+                          partialMsg: "Fast! Ohne Anführungszeichen sucht Google die Wörter einzeln.", wrongMsg: "Tipp: Setz den ganzen Satz in Anführungszeichen." },
+                        { mission: "Für dein Referat willst du nur Treffer aus dem Klexikon (klexikon.zum.de) zum Thema Vulkane.",
+                          success: v => /site:klexikon/.test(v) && /vulkan/.test(v), partial: v => /site:\s/.test(v) || /klexikon/.test(v),
+                          good: [["Vulkan – Klexikon – das Kinderlexikon", "Ein Vulkan ist ein Berg, aus dem heißes, flüssiges Gestein kommt …"], ["Supervulkan – Klexikon", "Ein Supervulkan ist ein besonders großer Vulkan …"]],
+                          bad: [["Vulkan – Wikipedia", "Ein Vulkan ist eine geologische Struktur …"], ["Vulkan-Reisen nach Island", "Jetzt buchen!"], ["Klexikon – Startseite", "Das Kinderlexikon zum Nachschlagen."]],
+                          partialMsg: "Fast! Schreib site:klexikon.zum.de direkt zusammen – ohne Leerzeichen nach dem Doppelpunkt – und dahinter vulkan.", wrongMsg: "Tipp: site:klexikon.zum.de vulkan" }
+                    ];
+                    const g = document.getElementById("g");
+                    let s = 0, fails = 0;
+                    const res = list => list.map(([t, sn]) => `<div class="res"><span class="t">${t}</span><span class="s">${sn}</span></div>`).join("");
+                    const paint = () => {
+                        const st = stages[s];
+                        g.innerHTML = `<span class="counter">Aufgabe ${s + 1} von ${stages.length}</span><p><b>${st.mission}</b></p>
+                            <div class="serp">${glogo}<div class="gsearch"><span>🔍</span><input id="q" placeholder="Suche eingeben …" autocomplete="off" autocapitalize="off"><button class="btn small" id="go">Suchen</button></div><div id="out"></div></div>`;
+                        const run = () => {
+                            const v = normQ(document.getElementById("q").value), out = document.getElementById("out");
+                            if (st.success(v)) {
+                                out.innerHTML = `<p class="count">Ungefähr 2.400 Ergebnisse (0,28 Sekunden)</p>` + res(st.good);
+                                fb("✓ Richtig – jetzt passen die Treffer.", true);
+                                document.getElementById("go").disabled = true;
+                                if (s + 1 < stages.length) out.insertAdjacentHTML("beforeend", `<div class="actions"><button class="btn" id="nx">Nächste Aufgabe →</button></div>`), document.getElementById("nx").onclick = () => { s++; document.getElementById("g-fb").className = "fb"; paint(); };
+                                else api.win(starsFor(fails));
+                            } else {
+                                fails++;
+                                out.innerHTML = `<p class="count">Ungefähr 4.810.000 Ergebnisse</p>` + res(st.bad);
+                                fb(st.partial(v) ? st.partialMsg : st.wrongMsg, false);
+                            }
+                        };
+                        document.getElementById("go").onclick = run;
+                        document.getElementById("q").onkeydown = e => { if (e.key === "Enter") run(); };
+                    };
+                    paint();
+                },
+                journal: [
+                    { id: "a", q: "Wann lohnen sich Anführungszeichen oder site: – und wann reicht eine normale Suche? Nenne je ein eigenes Beispiel." },
+                    { id: "t", q: "🌍 Ergebnis deines Auftrags: Was hat sich mit Anführungszeichen verändert?" }
+                ]
+            },
+            {
+                id: "duell", nav: "Suchduell", icon: "⚔️", title: "Suchduell", time: "20 min", social: ["PA"],
+                goal: "Ihr wendet Keywords und Operatoren zu zweit an und vergleicht, wer mit wenigen Wörtern am schnellsten zur Antwort kommt.",
+                gameName: "4 Duell-Runden",
+                body: () => B("team", "👥", "So läuft das Duell", `
+                    <ol class="steps">
+                        <li><b>Partner A</b> zieht hier eine Fragekarte und liest sie vor. A bedient Stoppuhr und Klick-Zähler.</li>
+                        <li><b>Partner B</b> sucht auf dem eigenen iPad – mit <b>höchstens 3 Suchwörtern</b>. Jeder angetippte Treffer = 1 Klick.</li>
+                        <li>B sagt die Antwort. A deckt die Lösung auf und speichert die Runde.</li>
+                        <li>Dann tauschen. Insgesamt <b>4 Runden</b> (2 pro Person).</li>
+                    </ol>
+                    <p class="muted">Gewonnen hat, wer richtig liegt – mit wenig Zeit und wenig Klicks.</p>`) +
+                    B("play", "🃏", "Duell-Karten", `<div id="g"></div><div class="fb" id="g-fb"></div>`),
+                mount(api) {
+                    const g = document.getElementById("g");
+                    let rounds = api.get("rounds") || [], card = null, shown = false, t0 = 0, sec = 0, tick = null, clicks = 0, who = "B", kw = "";
+                    api.onLeave(() => clearInterval(tick));
+                    const used = () => rounds.map(r => r.q);
+                    const draw = () => { const left = DUEL.filter(d => !used().includes(d[0]) && (!card || d[0] !== card[0])); card = (left.length ? left : DUEL)[Math.floor(Math.random() * (left.length || DUEL.length))]; shown = false; sec = 0; clicks = 0; clearInterval(tick); tick = null; kw = ""; paint(); };
+                    const paint = () => {
+                        g.innerHTML = `<div class="duel-card">${card ? card[0] : "Tippe auf „Karte ziehen“"}</div>
+                            <div class="actions center"><button class="btn ghost" id="d-draw">🃏 ${card ? "Andere Karte" : "Karte ziehen"}</button></div>
+                            ${card ? `<div class="field"><label>Wer sucht?</label><div class="seg">${["A", "B"].map(x => `<button class="choice ${who === x ? "sel" : ""}" data-who="${x}">Partner ${x}</button>`).join("")}</div></div>
+                            <div class="grid two">
+                                <div class="tile center"><div class="stopw" id="d-sec">${sec} s</div><button class="btn small" id="d-time">${tick ? "⏹ Stopp" : "⏱ Start"}</button></div>
+                                <div class="tile center"><div class="stopw" id="d-cl">${clicks}</div><button class="btn small ghost" id="d-click">👆 +1 Klick</button></div>
+                            </div>
+                            <div class="field" style="margin-top:10px"><label for="d-kw">Suchwörter von Partner ${who} (höchstens 3)</label><input class="txt" id="d-kw" value="${K.esc(kw)}" placeholder="z. B. Gepard Geschwindigkeit"></div>
+                            <div class="actions center">${shown ? `<div class="fb show info" style="width:100%">Lösung: <b>${card[1]}</b></div><button class="btn ok" data-ok="1">✓ Richtig</button><button class="btn ghost" data-ok="0">✗ Falsch</button>` : `<button class="btn" id="d-show">👀 Lösung aufdecken</button>`}</div>` : ""}
+                            ${rounds.length ? `<table class="res-t"><tr><th>#</th><th>Wer</th><th>Suchwörter</th><th>Zeit</th><th>Klicks</th><th></th></tr>${rounds.map((r, i) => `<tr><td>${i + 1}</td><td>${r.who}</td><td>${K.esc(r.kw)}</td><td>${r.sec} s</td><td>${r.clicks}</td><td>${r.ok ? "✅" : "❌"}</td></tr>`).join("")}</table>` : ""}
+                            <p class="hint-line" style="text-align:center;color:var(--muted)">${rounds.length} von 4 Runden gespeichert</p>`;
+                        document.getElementById("d-draw").onclick = draw;
+                        if (!card) return;
+                        g.querySelectorAll("[data-who]").forEach(b => b.onclick = () => { who = b.dataset.who; paint(); });
+                        document.getElementById("d-kw").oninput = e => kw = e.target.value;
+                        document.getElementById("d-time").onclick = () => {
+                            if (tick) { clearInterval(tick); tick = null; paint(); return; }
+                            t0 = Date.now() - sec * 1000;
+                            tick = setInterval(() => { sec = Math.round((Date.now() - t0) / 1000); const e = document.getElementById("d-sec"); if (e) e.textContent = sec + " s"; }, 250);
+                            paint();
+                        };
+                        document.getElementById("d-click").onclick = () => { clicks++; document.getElementById("d-cl").textContent = clicks; };
+                        const sh = document.getElementById("d-show");
+                        if (sh) sh.onclick = () => { clearInterval(tick); tick = null; shown = true; paint(); };
+                        g.querySelectorAll("[data-ok]").forEach(b => b.onclick = () => {
+                            const words = kw.trim().split(/\s+/).filter(Boolean);
+                            if (!words.length) { api.toast("Tragt die Suchwörter ein."); return; }
+                            if (words.length > 3) { api.toast("Höchstens 3 Suchwörter! Kürzt sie."); return; }
+                            rounds.push({ q: card[0], who, kw: words.join(" "), sec, clicks, ok: b.dataset.ok === "1" });
+                            api.set("rounds", rounds);
+                            api.result(rounds.map(r => `${r.who}: „${r.kw}“ ${r.sec} s, ${r.clicks} Klicks ${r.ok ? "✓" : "✗"}`).join(" | "));
+                            card = null; who = who === "A" ? "B" : "A";
+                            if (rounds.length >= 4) { fb("✓ 4 Runden gespeichert. Vergleicht: Wer hatte die besten Suchwörter?", true); api.win(3); }
+                            paint();
+                        });
+                    };
+                    paint();
+                },
+                journal: [{ id: "a", q: "Welche Suchwörter haben im Duell am besten funktioniert? Warum?" }]
+            },
+            {
+                id: "bild", nav: "Bildersuche", icon: "🖼️", title: "Bilder-Rückwärtssuche", time: "15 min", social: ["EA"],
+                goal: "Du kannst mit der Bilder-Rückwärtssuche prüfen, ob ein Foto wirklich neu ist und stimmt.",
+                gameName: "Fake-Check",
+                body: () => lesson({
+                    learnTitle: "Ein Bild als Suchwort",
+                    theory: `<p>Bildern kann man nicht immer trauen. Fotos können bearbeitet sein, von einer KI stammen oder aus einem ganz anderen Zusammenhang kommen.</p>
+                        <p>Beispiel: Jemand postet ein Foto von einem brennenden Wald: „Waldbrand in Deutschland!“ In Wahrheit ist das Foto 10 Jahre alt und stammt aus Australien.</p>
+                        <p>Das Werkzeug dagegen ist die ${K.v("Rückwärtssuche", "Du suchst mit einem Bild statt mit Wörtern. Die Suchmaschine zeigt, wo das Bild schon überall war.")}: Du lädst das Bild hoch, und die Suchmaschine zeigt dir, wo und wann es schon im Internet war.</p>`,
+                    task: "1. Suche ein Bild einer Sehenswürdigkeit (z. B. Eiffelturm) und speichere es in den Fotos.<br>2. Öffne <a href='https://images.google.de' target='_blank' rel='noopener'>images.google.de</a>.<br>3. Tippe auf das Kamera-Symbol (Google Lens) und lade dein Foto hoch. Was passiert?",
+                    gameTitle: "Fake oder echt?",
+                    instr: "Dieser Post geht gerade herum. Prüfe ihn mit der Rückwärtssuche."
+                }),
+                mount(api) {
+                    const g = document.getElementById("g");
+                    let fails = 0;
+                    g.innerHTML = `<div class="post"><div class="h">📰 bremen_news_24 · heute</div>
+                        <p style="margin:6px 0 0;font-weight:700">😱 HAI im Werdersee gesichtet!!! Sofort teilen!!!</p>
+                        <svg viewBox="0 0 320 180" role="img" aria-label="Haiflosse in einem See">
+                            <rect width="320" height="180" fill="#bfe3f5"/><circle cx="270" cy="30" r="16" fill="#fde68a"/>
+                            <path d="M0 72 Q40 52 80 66 T160 62 T240 60 T320 70 V84 H0Z" fill="#4d7c3a"/>
+                            <rect y="80" width="320" height="100" fill="#3b82a0"/>
+                            <path d="M148 132 L170 84 L194 132 Z" fill="#475569"/>
+                            <path d="M112 134 Q170 124 230 134" stroke="#e0f2fe" stroke-width="3" fill="none"/>
+                            <path d="M40 150 Q60 146 80 150 M230 160 Q250 156 270 160" stroke="#a5d8ee" stroke-width="2" fill="none"/>
+                        </svg>
+                        <div class="actions center"><button class="btn" id="rev">📷 Rückwärtssuche starten</button></div></div>
+                        <div id="rev-out" style="margin-top:12px"></div><div id="rev-q" style="margin-top:12px"></div>`;
+                    document.getElementById("rev").onclick = () => {
+                        document.getElementById("rev").disabled = true;
+                        document.getElementById("rev-out").innerHTML = `<div class="serp"><p class="count">Gleiches Bild auf 3 Seiten gefunden</p>
+                            <div class="res"><span class="u">floridanews.example · 14.07.2015</span><span class="t">Shark spotted near Miami Beach</span><span class="s">A shark fin was seen close to the beach …</span></div>
+                            <div class="res"><span class="u">memeseite.example · 2017</span><span class="t">Die lustigsten Fake-Haie im Internet</span><span class="s">Dieser Hai war schon in jedem See der Welt 😂</span></div>
+                            <div class="res"><span class="u">bremen_news_24 · heute</span><span class="t">HAI im Werdersee gesichtet!!!</span><span class="s">Sofort teilen!!!</span></div></div>`;
+                        K.quiz("rev-q", [{
+                            q: "Das gleiche Bild gab es schon 2015 in Florida. Was bedeutet das?",
+                            options: [["Das Bild ist echt – es wurde nur früher schon mal gepostet.", false], ["Das Bild ist ein Fake: alt, aus Florida und falsch beschriftet.", true], ["Man kann es nicht wissen – die Rückwärtssuche findet oft falsche Treffer.", false]], reason: true,
+                            why: "Datum und Ort stimmen nicht. Wer das Bild heute als „Bremen“ postet, hat es kopiert und falsch beschriftet."
+                        }], right => { if (!right) fails++; api.win(starsFor(fails)); });
+                    };
+                },
+                journal: [
+                    { id: "a", q: "Ein Bild soll „von heute“ sein, die Rückwärtssuche zeigt es aber schon 2018. Was weißt du dann?" },
+                    { id: "t", q: "🌍 Ergebnis deines Auftrags: Was hat die Rückwärtssuche zu deinem Foto gezeigt?" }
+                ]
+            },
+            {
+                id: "quellen", nav: "Quellen", icon: "🧐", title: "Quellen checken", time: "15 min", social: ["EA"],
+                goal: "Du kannst mit den 5 W prüfen, ob eine Webseite eine gute Quelle ist.",
+                gameName: "Quellen-Check",
+                body: () => lesson({
+                    learnTitle: "Die 5 W – dein Quellen-Check",
+                    theory: `<p>Im Internet gibt es keinen Wahrheits-Filter. Jeder kann eine Webseite bauen: Fachleute, Firmen, die etwas verkaufen wollen, oder Leute ohne Ahnung. Prüfe jede Seite mit den <b>5 W</b>:</p>
+                        <div class="w5">
+                            <div><b>👤 Wer?</b>Steht ein Name im Impressum? Hat die Person Fachwissen?</div>
+                            <div><b>📅 Wann?</b>Ist der Text aktuell?</div>
+                            <div><b>🎯 Wozu?</b>Will die Seite informieren oder verkaufen?</div>
+                            <div><b>🔗 Woher?</b>Gibt es Belege? Sagen andere seriöse Seiten dasselbe?</div>
+                            <div><b>🗣️ Wie?</b>Sachlich – oder reißerisch mit „SCHOCK!!!“?</div>
+                        </div>`,
+                    task: "Öffne die Webseite deiner Schule (oder zdf.de). Suche den Link „Impressum“ (meist ganz unten). Wer ist für die Seite verantwortlich?",
+                    gameTitle: "Welche Quelle nimmst du?",
+                    instr: "Zwei Runden: erst die beste Quelle finden, dann echte Quellen-Typen einschätzen."
+                }),
+                mount(api) {
+                    const g = document.getElementById("g"), sets = shuffle(SOURCE_SETS).slice(0, 1);
+                    const real = () => {
+                        g.innerHTML = `<p><b>Runde 2: Echte Quellen-Typen.</b> Dein Referat geht über Vulkane. Wie gut eignet sich jede Quelle?</p><div id="g-real"></div>`;
+                        K.cards("g-real", [
+                            { t: "Wikipedia-Artikel „Vulkan“ – sehr ausführlich, viele Fachwörter, unten über 40 Einzelnachweise.", a: "start", why: "Wikipedia ist oft gut belegt, aber jeder kann mitschreiben. Gut zum Einstieg – wichtige Fakten über die Einzelnachweise prüfen.", reason: true },
+                            { t: "Klexikon-Artikel „Vulkan“ – Lexikon für Kinder und Jugendliche, einfache Sprache, betreut von einer Redaktion.", a: "good", why: "Verständlich und geprüft – gut geeignet. Für Details eine zweite Quelle dazunehmen." },
+                            { t: "tagesschau.de – Bericht über einen Vulkanausbruch auf Island, März 2024.", a: "good", why: "Nachrichtenredaktion, Datum, Ort: gut für ein aktuelles Beispiel." },
+                            { t: "YouTube: „10 KRASSE Vulkan-Fakten, die du nicht glaubst!!!“ – Kanal ohne Angaben, wer dahintersteckt.", a: "bad", why: "Reißerisch und unklar, wer dahintersteckt (Wer? Wie?)." },
+                            { t: "Antwort aus einem KI-Chat: „Der höchste Vulkan der Welt ist der Ätna.“", a: "bad", why: "Eine KI-Antwort ist keine Quelle, die du angeben kannst – und hier ist sie auch noch falsch." },
+                            { t: "Blog „Mein Urlaub am Vesuv“ – schöne Fotos, persönliche Eindrücke, 2019.", a: "start", why: "Gut für Eindrücke und Bilder, aber keine Fachquelle." }
+                        ], { good: "✅ gut geeignet", start: "⚠️ nur als Einstieg – dann prüfen", bad: "❌ ungeeignet" }, (right, n) => api.win(starsFor(fails + n - right)), { unit: "Quelle" });
+                    };
+                    let r = 0, fails = 0;
+                    const paint = () => {
+                        if (r >= sets.length) { document.getElementById("g-fb").className = "fb"; real(); return; }
+                        const S = sets[r];
+                        g.innerHTML = `<p><b>Runde 1:</b> Welche Quelle nimmst du für ein Referat über <b>${S.topic}</b>?</p>
+                            <div class="sites">${shuffle(S.sites).map((s, i) => `<button class="site" data-i="${S.sites.indexOf(s)}"><h4>${s.title}</h4><p>${s.text}</p><small>${s.author}</small></button>`).join("")}</div>`;
+                        let solved = false;
+                        g.querySelectorAll(".site").forEach(b => b.onclick = () => {
+                            if (solved) return;
+                            const s = S.sites[+b.dataset.i];
+                            if (s.good) {
+                                solved = true; b.classList.add("good"); fb("✓ " + s.why, true);
+                                g.insertAdjacentHTML("beforeend", `<div class="actions"><button class="btn" id="src-next">${r + 1 < sets.length ? "Nächstes Thema" : "Weiter zu Runde 2"} →</button></div>`);
+                                document.getElementById("src-next").onclick = () => { r++; document.getElementById("g-fb").className = "fb"; paint(); };
+                            } else {
+                                fails++; b.classList.add("bad"); setTimeout(() => b.classList.remove("bad"), 1500); fb("✗ " + s.why, false);
+                            }
+                        });
+                    };
+                    paint();
+                },
+                journal: [
+                    { id: "a", q: "Darfst du Wikipedia für ein Referat nutzen? Begründe mit den 5 W – und sag, was du zusätzlich tun solltest." },
+                    { id: "t", q: "🌍 Ergebnis deines Auftrags: Wer ist laut Impressum für die Seite verantwortlich?" }
+                ]
+            },
+            {
+                id: "ki", nav: "KI-Antwort", icon: "✨", title: "KI-Antwort über den Treffern", time: "15 min", social: ["EA"],
+                goal: "Du kannst eine KI-Antwort in den Suchergebnissen mit echten Treffern überprüfen.",
+                gameName: "KI-Check",
+                body: () => lesson({
+                    learnTitle: "Die KI fasst zusammen – und irrt sich manchmal",
+                    theory: `<p>Bei Google steht oft ganz oben eine <b>„Übersicht mit KI“</b>. Eine KI liest Webseiten und schreibt eine kurze Antwort. Das ist praktisch – aber:</p>
+                        <ul>
+                            <li>Die KI kann Fehler machen und sich Dinge ausdenken. Das nennt man ${K.v("halluzinieren", "Wenn eine KI etwas Falsches sehr überzeugt behauptet.")}.</li>
+                            <li>Sie versteht keine Witze und übernimmt manchmal Unsinn aus Foren.</li>
+                            <li>Darum gilt: <b>KI-Antwort immer mit mindestens einem echten Treffer prüfen</b> – am besten mit den 5 W.</li>
+                        </ul>
+                        <div class="bridge">🔜 In der nächsten Einheit (2.2) testest du KI noch genauer.</div>`,
+                    task: "Suche bei Google „Wie lange schlafen Katzen am Tag“. Steht oben eine KI-Antwort? Öffne einen echten Treffer darunter: Steht dort dasselbe? (Falls keine KI-Antwort kommt: probiere Bing.)",
+                    gameTitle: "Stimmt die KI?",
+                    instr: "Vergleiche die KI-Antwort mit den Treffern darunter."
+                }),
+                mount(api) {
+                    const serp = R => `<div class="serp"><div class="gsearch"><span>🔍</span><span class="q">${R.q}</span></div>
+                        <div class="ki-box"><div class="h">✨ Übersicht mit KI</div>${R.ki}<div class="src">${R.src}</div></div>
+                        ${R.res.map(([u, t, s]) => `<div class="res"><span class="u">${u}</span><span class="t">${t}</span><span class="s">${s}</span></div>`).join("")}</div>`;
+                    K.cards("g", KI_ROUNDS.map(R => ({ t: serp(R), a: R.a, why: R.why })),
+                        { 0: "✅ Stimmt – die Treffer bestätigen es", 1: "❌ Stimmt nicht – die Treffer sagen etwas anderes", 2: "🤷 Kann ich nicht prüfen" },
+                        (right, n) => api.win(starsFor(n - right)), { unit: "Suche" });
+                },
+                journal: [
+                    { id: "a", q: "Warum solltest du eine KI-Antwort über den Treffern immer prüfen? Nenne ein Beispiel aus der Übung." },
+                    { id: "t", q: "🌍 Ergebnis deines Auftrags: Stimmte die KI-Antwort zu den Katzen mit einem echten Treffer überein?" }
+                ]
+            },
+            {
+                id: "vergleich", nav: "Vergleich", icon: "⚖️", title: "Suchmaschinen im Vergleich", time: "15 min", social: ["EA"],
+                goal: "Du kannst drei Suchmaschinen vergleichen und begründen, welche du warum nutzt.",
+                gameName: "Zuordnen-Spiel",
+                body: () => lesson({
+                    learnTitle: "Google ist nicht die einzige",
+                    theory: `<p>Es gibt Alternativen, die manches anders machen:</p>
+                        <ul>
+                            <li><b><a href="https://www.google.de" target="_blank" rel="noopener">Google</a>:</b> der Marktführer. Findet fast alles, speichert aber viele Daten über dich, um Werbung zu zeigen.</li>
+                            <li><b><a href="https://www.bing.com" target="_blank" rel="noopener">Bing</a>:</b> gehört zu Microsoft. Bekannt für schöne Hintergrundbilder und KI-Funktionen.</li>
+                            <li><b><a href="https://www.qwant.com" target="_blank" rel="noopener">Qwant</a>:</b> aus Europa (Frankreich). Will deine Privatsphäre schützen und kein Profil über dich anlegen.</li>
+                        </ul>
+                        <p>Wenn du nicht ${K.v("getrackt", "verfolgt: Eine Firma sammelt, was du suchst und anklickst.")} werden willst, ist Qwant eine gute Wahl.</p>`,
+                    task: "Öffne Google, Bing und Qwant in drei Tabs. Suche überall nach „Schule der Zukunft“. Wo gefällt dir die Darstellung am besten? Wo ist am meisten Werbung?",
+                    gameTitle: "Wer bin ich?",
+                    instr: "Ordne jede Aussage der richtigen Suchmaschine zu."
+                }),
+                mount(api) {
+                    const pairs = shuffle([["Ich bin der Marktführer und finde fast alles.", "google"], ["Ich will kein Profil über dich anlegen.", "qwant"], ["Ich zeige dir jeden Tag ein schönes Foto als Hintergrund.", "bing"], ["Ich komme aus Europa (Frankreich).", "qwant"], ["Ich gehöre zu Microsoft.", "bing"]]);
+                    const g = document.getElementById("g");
+                    let solved = 0, fails = 0;
+                    g.innerHTML = `<div class="grid two">${pairs.map(([t, a], i) => `<div class="eng" data-a="${a}"><p>„${t}“</p><div class="seg">${[["google", '<span class="elogo google">G</span>Google'], ["bing", '<span class="elogo bing">b</span>Bing'], ["qwant", '<span class="elogo qwant">Q</span>Qwant']].map(([k, l]) => `<button class="choice" data-k="${k}">${l}</button>`).join("")}</div></div>`).join("")}</div>`;
+                    g.querySelectorAll(".eng").forEach(card => card.querySelectorAll(".choice").forEach(b => b.onclick = () => {
+                        if (card.classList.contains("done")) return;
+                        if (b.dataset.k === card.dataset.a) {
+                            card.classList.add("done"); b.classList.add("good");
+                            if (++solved === pairs.length) { fb("✓ Alles richtig zugeordnet.", true); api.win(starsFor(fails)); }
+                        } else { fails++; b.classList.add("bad"); setTimeout(() => b.classList.remove("bad"), 600); fb("Das passt nicht. Lies oben noch mal nach.", false); }
+                    }));
+                },
+                journal: [
+                    { id: "a", q: "Welche Suchmaschine nimmst du ab jetzt – und warum?" },
+                    { id: "t", q: "🌍 Ergebnis deines Auftrags: Wo war bei „Schule der Zukunft“ am meisten Werbung?" }
+                ]
+            },
+            {
+                id: "projekt", nav: "Projekt", icon: "🏁", title: "Das Abschluss-Projekt", time: "35 min", social: ["EA", "PA"],
+                goal: "Du beantwortest eine eigene Frage mit Keywords, geprüften Quellen und eigenen Worten.",
+                gameName: "Webquest",
+                body: () => B("learn", "📖", "Dein Meisterstück", `<p>Du kennst jetzt alle Werkzeuge: Keywords, Anführungszeichen, Bildersuche, Quellen-Check, KI-Prüfung und verschiedene Suchmaschinen. Jetzt führst du eine eigene Recherche durch – zu einem Thema deiner Wahl, z. B. „Das schnellste Tier“, „Die tiefste Stelle im Meer“ oder „Wie alt werden Schildkröten?“.</p>`) +
+                    B("play", "🔍", "Dein Webquest", `<div id="g"></div><div class="fb" id="g-fb"></div>`) +
+                    B("team", "👥", "Zu zweit", `<p>Tauscht die iPads und füllt gegenseitig den <b>Partner-Check</b> (Schritt 5) aus. Seid ehrlich – ein guter Tipp hilft mehr als ein Lob.</p>`) +
+                    B("info", "📤", "Abgabe", `<p>Fertig? <b>Melde dich kurz bei mir</b> und zeig mir deine Mappe. Danach sicherst du sie als PDF und lädst sie bei <b>itslearning</b> hoch.</p>`),
+                mount(api) {
+                    const g = document.getElementById("g"), W = ["Wer", "Wann", "Wozu", "Woher", "Wie"];
+                    const PC = ["Die Quellen passen zur Frage", "Die 5 W sind ehrlich abgehakt", "Die Antwort steht in eigenen Worten", "Ich würde der Antwort trauen"];
+                    const wq = Object.assign({ frage: "", kw: "", src: [{ n: "", w: [] }, { n: "", w: [] }, { n: "", w: [] }], antwort: "", pc: [], ptipp: "" }, api.get("wq") || {});
+                    const save = () => api.set("wq", wq);
+                    g.innerHTML = `<div class="field"><label for="wq-f">1 · Meine Frage</label><input class="txt" id="wq-f" value="${K.esc(wq.frage)}" placeholder="Was ist …?"></div>
+                        <div class="field"><label for="wq-k">2 · Meine Suchwörter (Keywords)</label><input class="txt" id="wq-k" value="${K.esc(wq.kw)}" placeholder="z. B. schnellstes Tier Welt"></div>
+                        <div class="field"><label>3 · Meine Quellen (mindestens 2) – hake ab, welche W erfüllt sind</label>
+                        ${wq.src.map((s, i) => `<div class="src-box"><input class="txt" data-src="${i}" value="${K.esc(s.n)}" placeholder="Quelle ${i + 1}: Name der Seite oder Link">
+                            <div class="wchk">${W.map(w => `<label><input type="checkbox" data-s="${i}" data-w="${w}" ${s.w.includes(w) ? "checked" : ""}>${w}?</label>`).join("")}</div></div>`).join("")}</div>
+                        <div class="field"><label for="wq-a">4 · Meine Antwort in eigenen Worten</label><textarea class="txt" id="wq-a" placeholder="Ich habe herausgefunden, dass …">${K.esc(wq.antwort)}</textarea></div>
+                        <div class="field src-box"><label>5 · Partner-Check – gib dein iPad deinem Partner. Er oder sie füllt das aus:</label>
+                            <div class="wchk">${PC.map((p, i) => `<label><input type="checkbox" data-pc="${i}" ${wq.pc.includes(i) ? "checked" : ""}>${p}</label>`).join("")}</div>
+                            <textarea class="txt" id="wq-pt" style="margin-top:8px" placeholder="Tipp vom Partner: Was ist gut, was sollte noch besser werden?">${K.esc(wq.ptipp)}</textarea></div>
+                        <div class="actions center"><button class="btn" id="wq-ok">✅ Webquest prüfen</button></div>`;
+                    document.getElementById("wq-f").oninput = e => { wq.frage = e.target.value; save(); };
+                    document.getElementById("wq-k").oninput = e => { wq.kw = e.target.value; save(); };
+                    document.getElementById("wq-a").oninput = e => { wq.antwort = e.target.value; save(); };
+                    document.getElementById("wq-pt").oninput = e => { wq.ptipp = e.target.value; save(); };
+                    g.querySelectorAll("[data-pc]").forEach(c => c.onchange = () => { const i = +c.dataset.pc; wq.pc = wq.pc.filter(x => x !== i); if (c.checked) wq.pc.push(i); save(); });
+                    g.querySelectorAll("[data-src]").forEach(inp => inp.oninput = () => { wq.src[+inp.dataset.src].n = inp.value; save(); });
+                    g.querySelectorAll("[data-w]").forEach(c => c.onchange = () => {
+                        const s = wq.src[+c.dataset.s], k = s.w.indexOf(c.dataset.w);
+                        if (c.checked && k < 0) s.w.push(c.dataset.w); if (!c.checked && k >= 0) s.w.splice(k, 1); save();
+                    });
+                    document.getElementById("wq-ok").onclick = () => {
+                        const named = wq.src.filter(s => s.n.trim());
+                        if (wq.frage.trim().length < 5) return fb("Schreib zuerst deine Frage auf.", false);
+                        if (!wq.kw.trim()) return fb("Trag deine Suchwörter ein.", false);
+                        if (named.length < 2) return fb("Du brauchst mindestens 2 Quellen.", false);
+                        if (named.some(s => s.w.length < 3)) return fb("Jede Quelle sollte mindestens 3 der 5 W erfüllen. Such sonst eine bessere Quelle.", false);
+                        if (wq.antwort.trim().length < 20) return fb("Schreib deine Antwort in ein bis zwei ganzen Sätzen.", false);
+                        if (wq.ptipp.trim().length < 10) return fb("Jetzt fehlt noch der Partner-Check mit einem Tipp vom Partner.", false);
+                        fb("✓ Dein Webquest ist vollständig und steht jetzt in deiner Mappe.", true);
+                        api.result(`Frage: ${wq.frage.trim()} · Suchwörter: ${wq.kw.trim()} · Quellen: ${named.map(s => `${s.n.trim()} (${s.w.join(", ")})`).join("; ")} · Antwort: ${wq.antwort.trim()} · Partner-Check: ${wq.pc.map(i => PC[i]).join(", ") || "–"}; Tipp: ${wq.ptipp.trim()}`);
+                        api.win(3);
+                    };
+                },
+                journal: [{ id: "a", q: "Bist du dir sicher, dass deine Antwort stimmt? Woran machst du das fest?" }]
+            }
+        ];
+
+        K.init({
+            key: "search_course_v14",
+            title: "Suchmaschinen kennenlernen",
+            icon: "🔍",
+            lead: "Wie findet Google in einer halben Sekunde Millionen Treffer – und welchen davon kannst du trauen? In 10 Stationen lernst du, gezielt zu suchen, Fakes und Werbung zu erkennen und KI-Antworten zu prüfen.",
+            duration: "3 Doppelstunden",
+            stars: true,
+            submit: "bei itslearning hochladen",
+            parts: [
+                { label: "Doppelstunde 1 · Wie Suchen funktioniert", from: 1, to: 4 },
+                { label: "Doppelstunde 2 · Suchen wie ein Profi", from: 5, to: 8 },
+                { label: "Doppelstunde 3 · Vergleichen & Abschluss-Projekt", from: 9, to: 10 }
+            ],
+            glossary: [
+                ["Crawler", "Programm, das Webseiten besucht und liest."],
+                ["Index", "Der Katalog aller gelesenen Webseiten."],
+                ["Gesponsert", "Bezahlte Anzeige in den Suchergebnissen."],
+                ["Organischer Treffer", "Normales Ergebnis, für das niemand bezahlt hat."],
+                ["Keyword", "Schlüsselwort für die Suche."],
+                ["Operator", "Zeichen oder Befehl, der die Suche genauer macht, z. B. Anführungszeichen oder site:."],
+                ["Rückwärtssuche", "Mit einem Bild statt mit Wörtern suchen."],
+                ["Impressum", "Angabe, wer für eine Webseite verantwortlich ist."],
+                ["Halluzinieren", "Wenn eine KI etwas Falsches überzeugt behauptet."]
+            ],
+            stations: STATIONS
+        });
+
+    </script>
+</body>
+</html>
