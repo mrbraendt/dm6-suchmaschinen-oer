@@ -179,12 +179,13 @@
             color: inherit; font: 800 1em/1.2 var(--font); cursor: pointer; position: relative; touch-action: manipulation;
         }
         .vocab.open { background: var(--soft); border-radius: 8px; }
-        .vocab .tip {
-            display: none; position: absolute; left: 0; top: calc(100% + 6px); z-index: 5;
-            width: min(280px, 70vw); background: var(--ink); color: #fff; padding: 10px 12px;
-            border-radius: 12px; font-weight: 600; font-size: .92rem; text-align: left; box-shadow: 0 8px 20px rgba(0,0,0,.25);
+        .vocab .tip { display: none; }
+        /* Erklärung steht als Block unter dem Absatz – ragt nie aus dem Bildschirm */
+        .vtip {
+            display: block; background: var(--ink); color: #fff; padding: 10px 14px; margin: 4px 0 12px;
+            border-radius: 12px; font-weight: 600; font-size: .95rem; line-height: 1.45; text-align: left;
+            overflow-wrap: anywhere;
         }
-        .vocab.open .tip { display: block; }
 
         .home-grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
         .st-card {
@@ -255,6 +256,32 @@
         .why-box label { display: block; font-weight: 800; margin-bottom: 4px; color: var(--ink); }
         .why-t { width: 100%; border-radius: 12px; border: 2px solid var(--line); padding: 8px 10px; font-size: 1rem; background: #fff; resize: vertical; }
 
+        /* ===== Pflicht/Zusatz, Hook, Auflösung ===== */
+        .badge { display: inline-block; font-size: .72rem; font-weight: 900; border-radius: 99px; padding: 3px 9px; vertical-align: middle; white-space: nowrap; }
+        .badge.req { background: #fee2e2; color: #991b1b; }
+        .badge.opt { background: #e0f2fe; color: #075985; }
+        .badge.res { background: #ede9fe; color: #5b21b6; }
+        .plan { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 10px 14px; margin-bottom: 14px; font-size: .95rem; line-height: 1.5; }
+        .plan div + div { margin-top: 2px; }
+        .block.hook { border-left: 6px solid #a855f7; }
+        .block.hook .bi { background: #f3e8ff; }
+        .hook-note { margin-top: 10px; font-size: .9rem; color: var(--muted); }
+        .hook-note .linkish { padding: 0 6px; }
+        .choice.pick { border-color: var(--accent); background: var(--soft); }
+        details.block > summary { list-style: none; font-size: 1.12rem; font-weight: 900; line-height: 1.25; gap: 10px; }
+        details.block > summary::-webkit-details-marker { display: none; }
+        details.block > summary::after { content: "▾"; margin-left: auto; font-size: 1.1rem; color: var(--muted); transition: transform .2s; }
+        details.block[open] > summary::after { transform: rotate(180deg); }
+        details.block[open] > summary { margin-bottom: 12px; }
+        .jq .badge { margin-right: 4px; }
+        .jq.req textarea { border-color: #f4c27a; }
+        .jtools { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 2px; }
+        .jtools .linkish { padding: 0; }
+        .jhint { font-size: .88rem; font-weight: 750; color: var(--muted); }
+        .jhint.ok { color: var(--ok); }
+        .part-t { display: block; margin-top: 2px; text-transform: none; letter-spacing: 0; font-weight: 750; font-size: .88rem; }
+        .st-card .tx { display: block; min-width: 0; }
+
         /* ===== Thema: Suchmaschinen (Indigo) ===== */
         :root {
             --bg: #eef2ff;
@@ -270,13 +297,27 @@
         .theory a, .task-text a { color: var(--accent-deep); font-weight: 800; }
         .bridge { background: #fff7d6; border-radius: 12px; padding: 10px 12px; font-weight: 700; margin-top: 10px; }
 
-        /* Crawler */
-        .legend { display: flex; gap: 12px; justify-content: center; margin-bottom: 12px; font-size: .88rem; color: var(--muted); font-weight: 700; flex-wrap: wrap; }
-        .legend span i { display: inline-block; width: 18px; height: 18px; vertical-align: middle; margin-right: 5px; border-radius: 6px; }
-        .crawler { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; max-width: 380px; margin: 0 auto; }
-        .cell { aspect-ratio: 1; background: #e0e7ff; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.7rem; cursor: pointer; border: 2px solid #fff; min-height: 60px; touch-action: manipulation; transition: transform .15s, background .15s; }
-        .cell.on { background: linear-gradient(135deg, #5b6ef5, #7c3aed); transform: scale(1.06); }
-        .cell.scan { background: linear-gradient(135deg, #bbf7d0, #86efac); border-color: #22c55e; transform: none; }
+        /* Crawler-Netz */
+        .legend { display: flex; gap: 12px; justify-content: center; margin-bottom: 10px; font-size: .88rem; color: var(--muted); font-weight: 700; flex-wrap: wrap; }
+        .legend span i { display: inline-block; width: 18px; height: 18px; vertical-align: middle; margin-right: 5px; border-radius: 6px; border: 2px solid transparent; }
+        .net { position: relative; width: 100%; max-width: 420px; aspect-ratio: 1; margin: 0 auto; }
+        .net svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+        .pg {
+            position: absolute; width: 25%; height: 22%; transform: translate(-50%, -50%);
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+            padding: 2px; border-radius: 14px; border: 2px dashed #cbd5e1; background: #f1f5f9; color: #64748b;
+            font-weight: 800; font-size: .74rem; line-height: 1.1; text-align: center; cursor: pointer; touch-action: manipulation;
+            min-height: 52px; transition: background .2s, border-color .2s;
+        }
+        .pg .e { font-size: 1.45rem; line-height: 1; }
+        .pg.todo { background: #fff; border: 3px solid var(--accent); color: var(--ink); animation: pgpulse 1.2s ease-in-out infinite; }
+        .pg.read { background: #bbf7d0; border: 2px solid #22c55e; color: #14532d; }
+        .pg.here { box-shadow: 0 0 0 4px var(--accent); }
+        .pg.pick { border: 3px solid #f97316; animation: pgpulse 1.2s ease-in-out infinite; }
+        .pg.shake { animation: pgshake .35s; }
+        @keyframes pgpulse { 50% { transform: translate(-50%, -50%) scale(1.04); } }
+        @keyframes pgshake { 25% { transform: translate(-56%, -50%); } 75% { transform: translate(-44%, -50%); } }
+        .net-count { text-align: center; font-weight: 850; margin: 10px 0 0; color: var(--ink); }
 
         /* Such-Simulation / Ergebnisse */
         .serp { background: #fff; border: 2px solid var(--line); border-radius: 18px; padding: 14px; }
@@ -362,15 +403,24 @@
             const el = id => document.getElementById(id);
             const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
             const strip = h => String(h).replace(/<[^>]+>/g, "");
-            const fresh = () => ({ won: {}, answers: {}, results: {}, data: {}, stars: {}, reasons: {}, last: 0 });
+            const fresh = () => ({ won: {}, answers: {}, results: {}, data: {}, stars: {}, reasons: {}, hooks: {}, last: 0 });
+            const MINLEN = 15;   /* Pflicht-Einträge: mindestens ein ganzer Satz */
             function load() { try { return JSON.parse(localStorage.getItem(C.key)) || {}; } catch (e) { return {}; } }
             function save() { try { localStorage.setItem(C.key, JSON.stringify(S)); } catch (e) {} }
             const st = n => C.stations[n - 1];
             const ans = (s, j) => ((S.answers[s.id] || {})[j.id] || "");
+            /* Satzanfang (ph) allein zählt nicht: dahinter muss etwas stehen */
+            const starter = j => (j.ph || "").replace(/…\s*$/, "").trim();
+            function okAns(s, j) {
+                let t = ans(s, j).trim();
+                const b = starter(j);
+                if (b && t.startsWith(b)) return t.slice(b.length).trim().length >= 10;
+                return t.length >= MINLEN;
+            }
             function missing(s) {
                 const m = [];
                 if (s.mount && !S.won[s.id]) m.push(s.gameName || "Übung");
-                if ((s.journal || []).some(j => ans(s, j).trim().length < 3)) m.push("Lerntagebuch");
+                if ((s.journal || []).some(j => j.req && !okAns(s, j))) m.push("Pflicht-Eintrag");
                 return m;
             }
             const isDone = s => missing(s).length === 0;
@@ -380,6 +430,7 @@
                 C = course;
                 S = Object.assign(fresh(), load());
                 S.reasons = S.reasons || {};
+                S.hooks = S.hooks || {};
                 document.title = C.title;
                 document.body.insertAdjacentHTML("afterbegin", `
                     <header class="top">
@@ -391,7 +442,7 @@
                     <footer class="foot" id="k-foot"></footer>
                     <div class="toast" id="k-toast" role="status"></div>`);
                 document.addEventListener("click", e => {
-                    if (!e.target.closest(".vocab")) document.querySelectorAll(".vocab.open").forEach(v => v.classList.remove("open"));
+                    if (!e.target.closest(".vocab, .vtip")) closeTips();
                     /* Externe Links immer im Browser-Tab öffnen (auch als Home-Bildschirm-App) */
                     const a = e.target.closest("a[href^='http']");
                     if (a) { e.preventDefault(); window.open(a.href, "_blank", "noopener,noreferrer"); }
@@ -437,7 +488,7 @@
 
             function next() {
                 const m = missing(st(cur));
-                if (m.length) { toast("Erst noch: " + m.join(" + ")); return; }
+                if (m.length) { toast("Erst noch: " + m.join(" + ") + (m.includes("Pflicht-Eintrag") ? ". Schreib mindestens einen ganzen Satz." : "")); return; }
                 go(cur === C.stations.length ? "mappe" : cur + 1);
             }
 
@@ -455,31 +506,105 @@
                 return `<section class="block ${kind}"><div class="bh"><span class="bi">${icon}</span>${title}</div>${html}</section>`;
             }
 
+            function plan(s, n, html) {
+                const J = s.journal || [], nreq = J.filter(j => j.req).length, nopt = J.length - nreq;
+                const part = (C.parts || []).find(p => n >= p.from && n <= p.to);
+                const pf = [];
+                if (s.mount) pf.push("🎮 " + s.gameName);
+                if (nreq) pf.push("✏️ 1 Eintrag im Lerntagebuch");
+                if (html.includes('block task')) pf.push("🌍 Auftrag im echten Internet");
+                const zu = [];
+                if (nopt) zu.push(`✏️ ${nopt === 1 ? "1 weiterer Eintrag" : nopt + " weitere Einträge"} im Lerntagebuch`);
+                return `<div class="plan"><div>⏱ ca. ${s.time}${part ? " · " + part.label.split(" · ")[0] : ""}</div>
+                    <div><span class="badge req">Pflicht</span> ${pf.join(" · ") || "–"}</div>
+                    ${zu.length ? `<div><span class="badge opt">Zusatz</span> ${zu.join(" · ")}</div>` : ""}</div>`;
+            }
+
+            /* Hook: Vorhersagefrage vor der Erklärung. Nicht bewertet, blockiert nichts. */
+            function hookBlock(s) {
+                const h = s.hook;
+                if (!h) return "";
+                return `<section class="block hook" id="k-hook"><div class="bh"><span class="bi">🤔</span>Was glaubst du?</div>
+                    <p><b>${h.q}</b></p>
+                    <div>${h.opts.map((o, i) => `<button class="choice" data-h="${i}">${o[0]}</button>`).join("")}</div>
+                    <div class="fb" id="k-hook-fb" role="status"></div>
+                    <p class="hook-note" id="k-hook-note">Nur zum Nachdenken – das zählt nicht. <button class="linkish" id="k-hook-skip" type="button">Überspringen</button></p></section>`;
+            }
+            function hookMount(s) {
+                const h = s.hook;
+                if (!h) return;
+                const root = el("k-hook"), learn = el("k-learn"), fbx = el("k-hook-fb");
+                const show = i => {
+                    const o = h.opts[i];
+                    root.querySelectorAll(".choice").forEach((b, k) => {
+                        b.disabled = true;
+                        if (k === i) b.classList.add(o[1] === false ? "bad" : o[1] === true ? "good" : "pick");
+                        else if (o[1] !== null && h.opts[k][1] === true) b.classList.add("good");
+                    });
+                    fbx.className = "fb show " + (o[1] === true ? "good" : o[1] === false ? "bad" : "info");
+                    fbx.innerHTML = (o[1] === true ? "✓ Genau. " : o[1] === false ? "Nicht ganz. " : "") + (o[1] === true ? h.yes : o[1] === false ? h.no : (h.any || "Kein Problem. " + h.yes));
+                    el("k-hook-note").style.display = "none";
+                    if (learn) learn.open = true;
+                };
+                root.querySelectorAll(".choice").forEach(b => b.onclick = () => {
+                    const i = +b.dataset.h;
+                    S.hooks[s.id] = i; save();
+                    show(i);
+                    if (learn) learn.scrollIntoView({ block: "nearest", behavior: "smooth" });
+                });
+                el("k-hook-skip").onclick = () => { if (learn) { learn.open = true; learn.scrollIntoView({ block: "nearest", behavior: "smooth" }); } el("k-hook-note").style.display = "none"; };
+                const done = S.hooks[s.id];
+                if (typeof done === "number" && h.opts[done]) show(done);
+                else if (learn) learn.open = false;
+            }
+
             function station(n) {
-                const s = st(n);
+                const s = st(n), html = s.body();
                 el("k-main").innerHTML = `<div class="wrap">
                     <section class="s-hero">
                         <h1>${s.icon} ${s.title}</h1>
                         <p class="goal">🎯 ${s.goal}</p>
                     </section>
-                    ${s.body()}
+                    ${plan(s, n, html)}
+                    ${hookBlock(s)}
+                    ${html}
                     ${journal(s)}
                 </div>`;
+                hookMount(s);
                 if (s.mount) s.mount(api(s));
-                el("k-main").querySelectorAll("textarea[data-j]").forEach(t => t.addEventListener("input", () => {
-                    S.answers[s.id] = S.answers[s.id] || {};
-                    S.answers[s.id][t.dataset.j] = t.value;
-                    clearTimeout(saveT); saveT = setTimeout(save, 300);
-                    refresh();
-                }));
+                const hint = j => {
+                    const h = el("k-main").querySelector(`[data-jh="${j.id}"]`), t = el("k-main").querySelector(`textarea[data-j="${j.id}"]`);
+                    if (!h) return;
+                    const sb = el("k-main").querySelector(`[data-st="${j.id}"]`);
+                    if (sb) sb.style.display = t.value.trim() ? "none" : "";
+                    if (!j.req) { h.textContent = ""; return; }
+                    const good = okAns(s, j);
+                    h.className = "jhint" + (good ? " ok" : "");
+                    h.textContent = good ? "✓ Pflicht erledigt" : (t.value.trim() ? "Schreib mindestens einen ganzen Satz." : "");
+                };
+                (s.journal || []).forEach(j => {
+                    const t = el("k-main").querySelector(`textarea[data-j="${j.id}"]`);
+                    t.addEventListener("input", () => {
+                        S.answers[s.id] = S.answers[s.id] || {};
+                        S.answers[s.id][j.id] = t.value;
+                        clearTimeout(saveT); saveT = setTimeout(save, 300);
+                        hint(j); refresh();
+                    });
+                    const sb = el("k-main").querySelector(`[data-st="${j.id}"]`);
+                    if (sb) sb.onclick = () => { t.value = starter(j) + " "; t.dispatchEvent(new Event("input")); t.focus(); t.setSelectionRange(t.value.length, t.value.length); };
+                    hint(j);
+                });
             }
 
             function journal(s) {
-                if (!s.journal || !s.journal.length) return "";
+                const J = s.journal || [];
+                if (!J.length) return "";
+                const hasReq = J.some(j => j.req);
                 return block("journal", "✏️", "Lerntagebuch",
-                    `<p class="muted">Schreib direkt in die Kästen. Alles landet am Ende in deiner <b>Mappe</b>.</p>` +
-                    s.journal.map(j => `<div class="jq"><label for="j-${s.id}-${j.id}">${j.q}</label>
-                        <textarea id="j-${s.id}-${j.id}" data-j="${j.id}" placeholder="${esc(j.ph || "")}">${esc(ans(s, j))}</textarea></div>`).join(""));
+                    `<p class="muted">${hasReq ? "<b>Ein Eintrag ist Pflicht</b> (mit rotem Schild). Die anderen sind freiwillig." : "Hier ist alles <b>freiwillig</b>."} Was du schreibst, landet in deiner <b>Mappe</b>.</p>` +
+                    J.map(j => `<div class="jq ${j.req ? "req" : ""}"><label for="j-${s.id}-${j.id}">${j.req ? '<span class="badge req">Pflicht</span> ' : ""}${j.q}${j.req ? "" : ' <span class="muted">(freiwillig)</span>'}</label>
+                        <textarea id="j-${s.id}-${j.id}" data-j="${j.id}" placeholder="${esc(j.ph || "")}">${esc(ans(s, j))}</textarea>
+                        <div class="jtools">${j.ph ? `<button type="button" class="linkish" data-st="${j.id}">✍️ Satzanfang einfügen</button>` : ""}<span class="jhint" data-jh="${j.id}" role="status"></span></div></div>`).join(""));
             }
 
             function api(s) {
@@ -503,7 +628,8 @@
             function home() {
                 const parts = C.parts || [{ label: "", from: 1, to: C.stations.length }];
                 const card = (s, n) => `<button class="st-card ${isDone(s) ? "ok" : ""}" onclick="K.go(${n})">
-                    <span class="n">${isDone(s) ? "✓" : s.icon}</span><span class="t">${s.title}</span></button>`;
+                    <span class="n">${isDone(s) ? "✓" : s.icon}</span><span class="tx"><span class="t">${s.title}</span><span class="m">⏱ ca. ${s.time}</span></span></button>`;
+                const mins = p => C.stations.slice(p.from - 1, p.to).reduce((a, s) => a + (parseInt(s.time, 10) || 0), 0);
                 el("k-main").innerHTML = `<div class="wrap">
                     <section class="s-hero home-hero">
                         <div class="big-ico">${C.icon}</div>
@@ -511,8 +637,8 @@
                         <p class="lead">${C.lead}</p>
                         ${C.stars && starTotal() ? `<div class="stars-total">⭐ ${starTotal()}</div>` : ""}
                     </section>
-                    ${parts.map(p => `${p.label ? `<div class="part-h">${p.label}</div>` : ""}<div class="home-grid">${C.stations.slice(p.from - 1, p.to).map((s, i) => card(s, p.from + i)).join("")}</div>`).join("")}
-                    <p class="home-how">An jeder Station: Übung lösen, Lerntagebuch schreiben. Am Ende alles aus der 📒 Mappe als PDF sichern${C.submit ? " und " + C.submit : ""}.</p>
+                    ${parts.map(p => `${p.label ? `<div class="part-h">${p.label}<span class="part-t">Station ${p.from}${p.to > p.from ? "–" + p.to : ""} · ca. ${mins(p)} min</span></div>` : ""}<div class="home-grid">${C.stations.slice(p.from - 1, p.to).map((s, i) => card(s, p.from + i)).join("")}</div>`).join("")}
+                    <p class="home-how">An jeder Station: erst eine Frage tippen, dann lesen, dann die Übung lösen. <b>Pflicht</b> sind die Übung und ein Lerntagebuch-Eintrag pro Doppelstunde – das steht an jeder Station. Alles andere ist <b>Zusatz</b>. Am Ende alles aus der 📒 Mappe als PDF sichern${C.submit ? " und " + C.submit : ""}.</p>
                     ${C.glossary ? `<details class="gloss"><summary>Begriffe</summary>${C.glossary.map(([w, d]) => `<p><b>${w}:</b> ${d}</p>`).join("")}</details>` : ""}
                     ${C.homeExtra || ""}
                     <p class="center"><button class="linkish" onclick="K.reset()">Alles löschen und neu anfangen</button></p>
@@ -530,7 +656,7 @@
                     ${C.stations.map((s, i) => block("m-st", isDone(s) ? "✅" : s.icon, `${i + 1} · ${s.title}`,
                         (S.results[s.id] ? `<p class="m-res">📊 ${esc(S.results[s.id])}</p>` : "") +
                         (S.reasons[s.id] || []).map(r => `<div class="m-q"><b>Begründung: ${esc(r.q)}</b><p>${esc(r.a)}</p></div>`).join("") +
-                        ((s.journal || []).map(j => `<div class="m-q"><b>${j.q}</b><p>${esc(ans(s, j).trim()) || '<span class="muted">– noch leer –</span>'}</p></div>`).join("") ||
+                        ((s.journal || []).map(j => `<div class="m-q"><b>${j.q}</b><p>${esc(ans(s, j).trim()) || '<span class="muted">${j.req ? "– noch leer –" : "– freiwillig, nicht ausgefüllt –"}</span>'}</p></div>`).join("") ||
                             (S.results[s.id] || (S.reasons[s.id] || []).length ? "" : '<p class="muted">Hier gibt es nichts zu schreiben.</p>')))).join("")}
                     <section class="block no-print"><details><summary>📄 So sicherst du die PDF auf dem iPad</summary>
                         <ol class="steps">
@@ -577,9 +703,20 @@
             }
 
             const v = (word, def) => `<button type="button" class="vocab" onclick="K.vt(this)">${word}<span class="tip">${def}</span></button>`;
+            function closeTips() {
+                document.querySelectorAll(".vocab.open").forEach(x => x.classList.remove("open"));
+                document.querySelectorAll(".vtip").forEach(x => x.remove());
+            }
             function vt(btn) {
-                document.querySelectorAll(".vocab.open").forEach(x => { if (x !== btn) x.classList.remove("open"); });
-                btn.classList.toggle("open");
+                const was = btn.classList.contains("open");
+                closeTips();
+                if (was) return;
+                btn.classList.add("open");
+                const host = btn.closest("p, li, .bridge") || btn.parentElement;
+                const tip = document.createElement("div");
+                tip.className = "vtip"; tip.setAttribute("role", "status");
+                tip.innerHTML = "<b>" + btn.firstChild.textContent + ":</b> " + btn.querySelector(".tip").innerHTML;
+                if (host.tagName === "LI") host.appendChild(tip); else host.insertAdjacentElement("afterend", tip);
             }
 
             /* Karten nacheinander zuordnen. items: {t, a, why, labels?}; labels: {key: text} */
@@ -647,21 +784,22 @@
         const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
         const starsFor = fails => fails === 0 ? 3 : fails === 1 ? 2 : 1;
         const fb = (msg, ok) => { const e = document.getElementById("g-fb"); e.className = "fb show " + (ok ? "good" : "bad"); e.textContent = msg; };
-        /* iPad-Tastatur setzt „ “ ” statt " – alles auf " vereinheitlichen */
-        const normQ = s => s.toLowerCase().replace(/[„“”«»‚‘’]/g, '"').replace(/\s+/g, " ").trim();
+        /* iPad-Tastatur setzt „ “ ” statt " – echte Anführungszeichen auf " vereinheitlichen.
+           Apostrophe (’ ‘ ') bleiben unverändert, sonst zählt „war’s“ fälschlich als Anführungszeichen. */
+        const normQ = s => s.toLowerCase().replace(/[„“”«»]/g, '"').replace(/\s+/g, " ").trim();
         const glogo = `<div class="glogo"><span class="b">G</span><span class="r">o</span><span class="y">o</span><span class="b">g</span><span class="g">l</span><span class="r">e</span></div>`;
 
         /* Baukasten für eine Lektion: Theorie → echter Auftrag → Übung */
-        const lesson = L => B("learn", "📖", L.learnTitle, `<div class="theory">${L.theory}</div>`) +
-            B("task", "🌍", "Dein Auftrag im echten Internet", `<p class="task-text">${L.task}</p>${L.hint ? `<details><summary>💡 Tipp anzeigen</summary><p>${L.hint}</p></details>` : ""}`) +
-            B("play", "🎮", L.gameTitle, `<p>${L.instr}</p><div id="g"></div><div class="fb" id="g-fb"></div>`) + (L.extra || "");
+        const lesson = L => `<details class="block learn" id="k-learn" open><summary><span class="bi">📖</span>${L.learnTitle} <span class="badge res">Auflösung</span></summary><div class="theory">${L.theory}</div></details>` +
+            B("task", "🌍", 'Dein Auftrag im echten Internet <span class="badge req">Pflicht</span>', `<p class="task-text">${L.task}</p>${L.hint ? `<details><summary>💡 Tipp anzeigen</summary><p>${L.hint}</p></details>` : ""}`) +
+            B("play", "🎮", L.gameTitle + ' <span class="badge req">Pflicht</span>', `<p>${L.instr}</p><div id="g"></div><div class="fb" id="g-fb"></div>`) + (L.extra || "");
 
         const KEYWORDS = [
             { text: "Warum baut Steve in Minecraft eine Festung – schützt sie wirklich vor Creepern und Zombies?", k: 4, correct: ["minecraft", "festung", "creepern", "zombies"], ok: ["steve", "schützt"] },
             { text: "Hallo, kannst du mir bitte sagen, wie schwer ein afrikanischer Elefant eigentlich ist?", k: 3, correct: ["schwer", "afrikanischer", "elefant"], ok: [] },
             { text: "Ich muss für Bio herausfinden, wie lange eine Schildkröte ohne Futter überleben kann.", k: 3, correct: ["schildkröte", "futter", "überleben"], ok: ["ohne", "lange"] },
             { text: "Weißt du, wann der SV Werder Bremen zum letzten Mal deutscher Meister geworden ist?", k: 3, correct: ["werder", "bremen", "meister"], ok: ["letzten", "deutscher"] },
-            { text: "Zeig mir bitte ein einfaches Rezept für Pfannkuchen ohne Ei, das schnell geht.", k: 3, correct: ["rezept", "pfannkuchen", "ei"], ok: ["ohne", "einfaches", "schnell"] }
+            { text: "Zeig mir bitte ein einfaches Rezept für Pfannkuchen mit Banane, das schnell geht.", k: 3, correct: ["rezept", "pfannkuchen", "banane"], ok: ["einfaches", "schnell"] }
         ];
 
         const SOURCE_SETS = [
@@ -686,7 +824,7 @@
             ["In welchem Jahr fiel die Berliner Mauer?", "1989"],
             ["Wie heißt die Hauptstadt von Australien?", "Canberra"],
             ["Wie viele Knochen hat ein erwachsener Mensch?", "206"],
-            ["Wie schnell kann ein Gepard laufen?", "über 100 km/h"],
+            ["Wie schnell kann ein Gepard laufen?", "etwa 100 km/h"],
             ["Wie hoch ist die Zugspitze?", "2.962 m"],
             ["Wer hat das Märchen „Die Bremer Stadtmusikanten“ aufgeschrieben?", "die Brüder Grimm"],
             ["Wie viele Monde hat der Mars?", "2 (Phobos und Deimos)"],
@@ -696,10 +834,10 @@
         ];
 
         const KI_ROUNDS = [
-            { q: "wie viele beine hat eine spinne", ki: "Spinnen haben 6 Beine, genau wie alle anderen Insekten.", src: "Quellen: 2 Webseiten", a: 1,
+            { q: "wie viele beine hat eine spinne", ki: "Spinnen haben 6 Beine, genau wie alle anderen Insekten.", src: "Quellen: 2 Webseiten", a: 1, fake: true,
               res: [["de.wikipedia.org", "Spinnen – Wikipedia", "Spinnen sind keine Insekten. Sie haben acht Beine und gehören zu den Spinnentieren."], ["www.tierlexikon-kinder.de", "Spinnen einfach erklärt", "Alle Spinnen haben 8 Beine. Insekten haben 6."]],
               why: "Die KI hat Spinnen mit Insekten verwechselt. Beide Treffer sagen: 8 Beine." },
-            { q: "wie hoch ist die zugspitze", ki: "Die Zugspitze ist mit 2.962 Metern der höchste Berg Deutschlands.", src: "Quellen: 2 Webseiten", a: 0,
+            { q: "wie hoch ist die zugspitze", ki: "Die Zugspitze ist mit 2.962 Metern der höchste Berg Deutschlands.", src: "Quellen: 2 Webseiten", a: 0, fake: true,
               res: [["de.wikipedia.org", "Zugspitze – Wikipedia", "Die Zugspitze ist mit 2962 m der höchste Gipfel Deutschlands."], ["www.berge-lexikon.de", "Zugspitze: Steckbrief", "Höhe: 2.962 Meter. Lage: Bayern, an der Grenze zu Österreich."]],
               why: "Die KI-Antwort stimmt: Zwei verschiedene Treffer sagen dasselbe." },
             { q: "käse rutscht von der pizza", ki: "Mische etwa 1/8 Tasse ungiftigen Kleber in die Tomatensoße. So bleibt der Käse besser haften.", src: "Quelle: ein alter Witz-Beitrag in einem Forum", a: 1,
@@ -712,50 +850,135 @@
                 id: "crawler", nav: "Crawler", icon: "🕷️", title: "Wie Google funktioniert", time: "15 min", social: ["EA"],
                 goal: "Du kannst erklären, wie eine Suchmaschine mit Crawlern und Index so schnell Ergebnisse findet.",
                 gameName: "Crawler-Spiel",
+                hook: { q: "Du tippst bei Google auf „Suchen“. Sucht Google in diesem Moment live im ganzen Internet?",
+                    opts: [["Ja, Google schaut jetzt auf alle Webseiten der Welt.", false], ["Nein, Google blättert in einem Katalog, den es vorher angelegt hat.", true], ["🤷 Weiß ich nicht.", null]],
+                    yes: "Google hat die Seiten schon vorher gelesen und gespeichert. Wie das geht, erfährst du gleich.",
+                    no: "Das denken viele. Aber das Internet ist viel zu groß dafür. Google hat die Seiten schon vorher gelesen und in einem Katalog gespeichert." },
                 body: () => lesson({
                     learnTitle: "Google sucht nicht jetzt – Google hat schon gesucht",
                     theory: `<p>Wenn du etwas suchst, bekommst du Millionen Ergebnisse in weniger als einer Sekunde. Wie geht das?</p>
                         <p>Das Geheimnis: <b>Google sucht gar nicht in diesem Moment im Internet.</b> Das würde viel zu lange dauern – es gibt Milliarden Webseiten.</p>
                         <p>Stattdessen schickt Google Programme los, die ${K.v("Crawler", "Englisch für „Krabbler“: Programme, die Tag und Nacht Webseiten besuchen und lesen.")} heißen. Sie besuchen Webseiten, lesen den Text und speichern ihn in einem riesigen Katalog, dem ${K.v("Index", "Der riesige Katalog aller gelesenen Webseiten. Wenn du googelst, blätterst du darin.")}. Das kann ein paar Tage dauern. Wenn du googelst, blätterst du nur in diesem Katalog.</p>
+                        <p><b>Wie finden Crawler neue Seiten?</b> Sie folgen ${K.v("Links", "Verweise von einer Webseite auf eine andere. Du tippst darauf und landest auf der anderen Seite.")}: Der Crawler liest eine Seite, sieht darauf Links und besucht dann die Seiten, auf die sie zeigen. Eine Seite, auf die <b>kein</b> Link zeigt, kennt er nicht.</p>
                         <p><b>Und das Internet?</b> Das sind Computer auf der ganzen Welt, verbunden über Funk und Kabel (oft unter dem Meer). Jeder mit Internetzugang und einem erreichbaren Computer kann etwas ins Internet stellen.</p>`,
                     task: "Öffne einen neuen Tab. Suche nach einem Wort, das es gar nicht gibt (denk dir eins aus, z. B. „Schlumpfhausenbrot123“). Wie viele Ergebnisse findest du? Warum?",
                     hint: "Der Crawler braucht Zeit, um neue Dinge zu finden. Dein Fantasiewort steht noch in keinem Katalog der Welt – vielleicht nie, weil es niemand ins Internet schreibt.",
                     gameTitle: "Du bist der Crawler!",
-                    instr: "Tippe die Felder an und finde die <b>4 neuen Webseiten</b> für den Index."
+                    instr: "Du steuerst den Crawler. Er liest Seiten und folgt den Links. Schaffst du es, alle Seiten in den Index zu bringen?"
                 }),
                 mount(api) {
-                    const g = document.getElementById("g"), targets = new Set();
-                    while (targets.size < 4) targets.add(Math.floor(Math.random() * 16));
-                    let found = 0, taps = 0;
-                    g.innerHTML = `<div class="legend"><span><i style="background:#e0e7ff"></i>Seite im Netz</span><span><i style="background:#86efac"></i>gelesen</span><span>📄 neue Seite</span></div><div class="crawler" id="cg"></div>`;
-                    const cg = document.getElementById("cg");
-                    for (let i = 0; i < 16; i++) {
-                        const c = document.createElement("div");
-                        c.className = "cell";
-                        c.onclick = () => {
-                            if (c.classList.contains("on")) return;
-                            c.classList.add("on"); taps++;
-                            setTimeout(() => {
-                                c.classList.add("scan");
-                                c.textContent = targets.has(i) ? "📄" : "🕸️";
-                                if (targets.has(i) && ++found === 4) {
-                                    fb(`Alle neuen Seiten im Index! Du hast ${taps} Seiten gelesen – echte Crawler lesen Milliarden.`, true);
-                                    api.win(3);
+                    /* Netz aus 9 Seiten. Pfeile = Links. Zur Seite "neu" führt KEIN Link. */
+                    const P = [
+                        { id: "schule", e: "🏫", n: "Schule", x: 14, y: 14 }, { id: "verein", e: "⚽", n: "Verein", x: 50, y: 14 }, { id: "wetter", e: "☀️", n: "Wetter", x: 86, y: 14 },
+                        { id: "tiere", e: "🐾", n: "Tiere", x: 14, y: 50 }, { id: "rezepte", e: "🍳", n: "Rezepte", x: 50, y: 50 }, { id: "spiele", e: "🎮", n: "Spiele", x: 86, y: 50 },
+                        { id: "bremen", e: "🏙️", n: "Bremen", x: 14, y: 86 }, { id: "hamster", e: "🐹", n: "Hamster", x: 50, y: 86 }, { id: "neu", e: "🆕", n: "Meine neue Seite", x: 86, y: 86 }
+                    ];
+                    const byId = Object.fromEntries(P.map(p => [p.id, p]));
+                    const LINKS = [["schule", "verein"], ["schule", "tiere"], ["verein", "wetter"], ["verein", "rezepte"], ["tiere", "hamster"], ["tiere", "bremen"], ["bremen", "hamster"], ["hamster", "rezepte"], ["rezepte", "spiele"], ["spiele", "wetter"], ["neu", "spiele"]];
+                    const g = document.getElementById("g"), links = LINKS.map(l => l.slice());
+                    let read = new Set(["schule"]), here = "schule", fails = 0, phase = 1;
+                    const out = id => links.filter(l => l[0] === id).map(l => l[1]);
+                    /* tippbar: Seiten, zu denen ein Link von einer gelesenen Seite führt */
+                    const queued = () => P.filter(p => !read.has(p.id) && links.some(l => read.has(l[0]) && l[1] === p.id)).map(p => p.id);
+                    /* Rand der Kachel in Richtung (tx,ty) – dort beginnt/endet der Pfeil */
+                    const edge = (c, tx, ty) => {
+                        const dx = tx - c.x, dy = ty - c.y, t = Math.min(dx ? 14 / Math.abs(dx) : 9e9, dy ? 12.5 / Math.abs(dy) : 9e9);
+                        return [c.x + dx * t, c.y + dy * t];
+                    };
+                    const dist = (p, a, b) => {
+                        const dx = b.x - a.x, dy = b.y - a.y, t = Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / (dx * dx + dy * dy)));
+                        return Math.hypot(a.x + dx * t - p.x, a.y + dy * t - p.y);
+                    };
+                    /* Gerader Pfeil; läuft die Linie über eine dritte Seite, wird sie gebogen */
+                    const arrow = (a, b) => {
+                        if (!P.some(p => p !== a && p !== b && dist(p, a, b) < 14)) {
+                            const [x1, y1] = edge(a, b.x, b.y), [x2, y2] = edge(b, a.x, a.y);
+                            return `M${x1} ${y1} L${x2} ${y2}`;
+                        }
+                        const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2, L = Math.hypot(b.x - a.x, b.y - a.y), nx = -(b.y - a.y) / L, ny = (b.x - a.x) / L;
+                        const cands = [1, -1].map(k => ({ x: mx + nx * 40 * k, y: my + ny * 40 * k }));
+                        const score = c => { const ap = { x: (mx + c.x) / 2, y: (my + c.y) / 2 }; return Math.min(ap.x, ap.y, 100 - ap.x, 100 - ap.y, ...P.map(p => Math.max(Math.abs(p.x - ap.x) - 12.5, Math.abs(p.y - ap.y) - 11))); };
+                        const c = score(cands[0]) >= score(cands[1]) ? cands[0] : cands[1];
+                        const [x1, y1] = edge(a, c.x, c.y), [x2, y2] = edge(b, c.x, c.y);
+                        return `M${x1} ${y1} Q${c.x} ${c.y} ${x2} ${y2}`;
+                    };
+                    const hint = () => phase === 1
+                        ? (queued().length ? `Du bist bei ${byId[here].e} <b>${byId[here].n}</b>. Tippe eine Seite mit <b>blauem Rahmen</b> an: Dorthin führt ein Link.` : "")
+                        : phase === 2 ? "Wo soll ein Link auf deine neue Seite stehen? Tippe eine <b>grüne Seite mit orangem Rahmen</b> an." : phase === 3 ? "Jetzt führt ein Link zu deiner Seite. Tippe 🆕 an!" : "";
+                    const paint = () => {
+                        const q = queued();
+                        const lines = links.filter(l => read.has(l[0])).map(l => {
+                            const cur = l[0] === here;
+                            return `<path d="${arrow(byId[l[0]], byId[l[1]])}" fill="none" stroke="${cur ? "#5b6ef5" : "#94a3b8"}" stroke-width="${cur ? 1.5 : 1}" marker-end="url(#${cur ? "ah1" : "ah2"})"/>`;
+                        }).join("");
+                        g.innerHTML = `<div class="legend"><span><i style="background:#bbf7d0;border-color:#22c55e"></i>im Index</span><span><i style="background:#fff;border-color:#5b6ef5"></i>Link gefunden</span><span><i style="background:#f1f5f9;border:2px dashed #cbd5e1"></i>unbekannt</span></div>
+                            <div class="net"><svg viewBox="0 0 100 100" aria-hidden="true"><defs>
+                                <marker id="ah1" viewBox="0 0 6 6" refX="5" refY="3" markerWidth="4.5" markerHeight="4.5" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0L6 3L0 6z" fill="#5b6ef5"/></marker>
+                                <marker id="ah2" viewBox="0 0 6 6" refX="5" refY="3" markerWidth="4" markerHeight="4" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0L6 3L0 6z" fill="#94a3b8"/></marker></defs>${lines}</svg>
+                                ${P.map(p => {
+                                    const c = ["pg"];
+                                    if (read.has(p.id)) c.push("read");
+                                    if (phase === 2 && read.has(p.id)) c.push("pick");
+                                    else if (q.includes(p.id)) c.push("todo");
+                                    if (p.id === here && phase !== 2) c.push("here");
+                                    return `<button type="button" class="${c.join(" ")}" data-p="${p.id}" style="left:${p.x}%;top:${p.y}%" aria-label="Seite ${p.n}${read.has(p.id) ? ", im Index" : ""}"><span class="e">${read.has(p.id) ? (p.id === here && phase !== 2 ? "🕷️" : p.e) : p.e}</span>${p.n}</button>`;
+                                }).join("")}</div>
+                            <p class="net-count">📚 Im Index: ${read.size} ${read.size === 1 ? "Seite" : "Seiten"}</p>
+                            <p class="center" id="net-hint">${hint()}</p>`;
+                        g.querySelectorAll(".pg").forEach(b => b.onclick = () => tap(b.dataset.p, b));
+                    };
+                    const shake = b => { b.classList.add("shake"); setTimeout(() => b.classList.remove("shake"), 400); };
+                    const tap = (id, b) => {
+                        if (phase === 1) {
+                            if (read.has(id)) { here = id; paint(); return; }          /* zu einer gelesenen Seite zurück */
+                            if (queued().includes(id)) {
+                                read.add(id); here = id;
+                                if (!queued().length) {                                   /* nichts Neues mehr erreichbar */
+                                    phase = 2; paint();
+                                    fb("Der Crawler ist fertig: Er hat " + (read.size - 1) + " Seiten gelesen. Aber 🆕 „Meine neue Seite“ hat er nie gefunden. Warum nicht? Es führt kein einziger Pfeil dorthin.", false);
+                                    document.getElementById("g-fb").className = "fb show info";
+                                    document.querySelector(".pg[data-p='neu']").classList.add("shake");
+                                    return;
                                 }
-                            }, 200);
-                        };
-                        cg.appendChild(c);
-                    }
+                                if (out(id).length) document.getElementById("g-fb").className = "fb";
+                                else fb("Sackgasse: Auf dieser Seite sind keine Links. Mach bei einer anderen Seite mit blauem Rahmen weiter.", false);
+                                paint(); return;
+                            }
+                            shake(b);
+                            if (id === "neu") fb("Zu dieser Seite führt kein Pfeil. Der Crawler kennt sie nicht – er kann sie nicht lesen.", false);
+                            else { fails++; fb("Dorthin führt noch kein Link, den der Crawler kennt. Such Seiten mit blauem Rahmen.", false); }
+                            return;
+                        }
+                        if (phase === 2) {
+                            if (!read.has(id)) { shake(b); fb("Wähle eine grüne Seite. Von dort aus soll der Link zu deiner neuen Seite führen.", false); return; }
+                            links.push([id, "neu"]); here = id; phase = 3;
+                            fb("Du hast auf " + byId[id].n + " einen Link zu deiner Seite gesetzt. Der Crawler liest die Seite noch einmal …", true);
+                            paint(); return;
+                        }
+                        if (phase === 3) {
+                            if (id !== "neu") { shake(b); fb("Tippe auf 🆕, dem neuen Link nach.", false); return; }
+                            read.add("neu"); here = "neu"; phase = 4; paint();
+                            fb("Geschafft! Jetzt steht deine Seite im Index. Merke: Der Crawler findet nur Seiten, auf die schon ein Link zeigt. Darum dauert es bei einer ganz neuen Seite oft ein paar Tage. Du kannst sie auch bei Google anmelden.", true);
+                            g.insertAdjacentHTML("beforeend", `<div class="actions center"><button class="btn ghost small" id="net-again">🔁 Nochmal spielen</button></div>`);
+                            document.getElementById("net-again").onclick = () => { links.length = 0; LINKS.forEach(l => links.push(l.slice())); read = new Set(["schule"]); here = "schule"; fails = 0; phase = 1; document.getElementById("g-fb").className = "fb"; paint(); };
+                            api.win(starsFor(fails));
+                        }
+                    };
+                    paint();
                 },
                 journal: [
-                    { id: "a", q: "Warum findet dein Freund deine neue Webseite morgen vielleicht noch nicht bei Google?" },
-                    { id: "t", q: "🌍 Ergebnis deines Auftrags: Wie viele Treffer hatte dein Fantasiewort – und warum?" }
+                    { id: "a", req: true, ph: "Er findet sie vielleicht noch nicht, weil …", q: "Warum findet dein Freund deine neue Webseite morgen vielleicht noch nicht bei Google?" },
+                    { id: "t", ph: "Mein Fantasiewort hatte so viele Treffer:", q: "🌍 Ergebnis deines Auftrags: Wie viele Treffer hatte dein Fantasiewort – und warum?" }
                 ]
             },
             {
                 id: "werbung", nav: "Werbung", icon: "📢", title: "Werbung erkennen", time: "15 min", social: ["EA"],
                 goal: "Du kannst gesponserte Treffer von normalen Suchergebnissen unterscheiden und erklären, warum Werbung oben steht.",
                 gameName: "Werbe-Spiel",
+                hook: { q: "Die Suche bei Google kostet dich nichts. Woher hat Google trotzdem Geld?",
+                    opts: [["Aus Werbung, die in den Suchergebnissen steht.", true], ["Vom Staat, weil Suchen wichtig ist.", false], ["Gar nicht, Google ist ein Verein ohne Geld.", false]],
+                    yes: "Firmen bezahlen dafür, dass ihre Seite oben steht. Darauf musst du achten.",
+                    no: "Google ist eine Firma. Das meiste Geld kommt aus Werbung in den Suchergebnissen." },
                 body: () => lesson({
                     learnTitle: "Wie verdient Google Geld?",
                     theory: `<p>Suchmaschinen wie Google, Bing oder Ecosia sind Firmen. Die Suche ist für dich kostenlos – Geld verdienen sie mit <b>Werbung</b>.</p>
@@ -797,15 +1020,19 @@
                     });
                 },
                 journal: [
-                    { id: "a", q: "Woran erkennst du bei Google sicher, dass ein Treffer Werbung ist?" },
-                    { id: "b", q: "Würdest du für ein Referat eher eine Anzeige oder einen normalen Treffer nehmen? Warum?" },
-                    { id: "t", q: "🌍 Ergebnis deines Auftrags: Wie viele Anzeigen standen bei „Sneaker kaufen“ vor dem ersten echten Treffer?" }
+                    { id: "a", ph: "Werbung erkenne ich daran, dass …", q: "Woran erkennst du bei Google sicher, dass ein Treffer Werbung ist?" },
+                    { id: "b", ph: "Für ein Referat würde ich nehmen:", q: "Würdest du für ein Referat eher eine Anzeige oder einen normalen Treffer nehmen? Warum?" },
+                    { id: "t", ph: "Vor dem ersten echten Treffer standen so viele Anzeigen:", q: "🌍 Ergebnis deines Auftrags: Wie viele Anzeigen standen bei „Sneaker kaufen“ vor dem ersten echten Treffer?" }
                 ]
             },
             {
                 id: "keywords", nav: "Keywords", icon: "🔑", title: "Schlüsselwörter", time: "15 min", social: ["EA"],
                 goal: "Du kannst aus einer langen Frage die wichtigsten Suchwörter auswählen.",
                 gameName: "Keyword-Spiel",
+                hook: { q: "Wie viele Wörter schreibst du am besten ins Suchfeld?",
+                    opts: [["Eine ganze Frage mit allen Wörtern.", false], ["Wenige wichtige Wörter.", true], ["Nur ein einziges Wort.", false]],
+                    yes: "Wenige, gut gewählte Wörter sind meist am schnellsten und am genauesten.",
+                    no: "Ganze Sätze gehen heute oft auch. Aber wenige wichtige Wörter sind meist schneller und genauer. Nur ein Wort ist oft zu ungenau." },
                 body: () => lesson({
                     learnTitle: "Wenige Wörter, bessere Treffer",
                     theory: `<p>Viele tippen ganze Sätze in die Suche, als würden sie mit einem Menschen chatten: <i>„Hallo lieber Computer, sag mir doch bitte mal, wie schwer ein afrikanischer Elefant ist.“</i></p>
@@ -850,15 +1077,19 @@
                     paint();
                 },
                 journal: [
-                    { id: "a", q: "Du suchst ein Rezept für Waffeln ohne Zucker. Welche Keywords gibst du ein?" },
-                    { id: "b", q: "Warum lässt du Füllwörter wie „bitte“ oder „der, die, das“ weg?" },
-                    { id: "t", q: "🌍 Ergebnis deines Auftrags: Kam bei „Wetter Bremen“ und dem langen Satz dasselbe heraus?" }
+                    { id: "a", ph: "Ich gebe diese Keywords ein:", q: "Du suchst ein Rezept für Waffeln mit Banane. Welche Keywords gibst du ein?" },
+                    { id: "b", ph: "Ich lasse sie weg, weil …", q: "Warum lässt du Füllwörter wie „bitte“ oder „der, die, das“ weg?" },
+                    { id: "t", ph: "Bei beiden Suchen kam …", q: "🌍 Ergebnis deines Auftrags: Kam bei „Wetter Bremen“ und dem langen Satz dasselbe heraus?" }
                 ]
             },
             {
                 id: "quotes", nav: "Operatoren", icon: "❝", title: "Anführungszeichen und site:", time: "15 min", social: ["EA"],
                 goal: "Du kannst mit Anführungszeichen und site: gezielt suchen und einschätzen, wann sich das lohnt.",
                 gameName: "Such-Simulation",
+                hook: { q: "Was machen Anführungszeichen, wenn du sie um mehrere Wörter setzt?",
+                    opts: [["Google sucht genau diese Wörter in genau dieser Reihenfolge.", true], ["Die Suche wird langsamer.", false], ["Nichts, Google ignoriert sie.", false]],
+                    yes: "Damit findest du genaue Titel und Zitate. Gleich probierst du es aus.",
+                    no: "Sie sind ein Befehl an Google: genau diese Wörter in genau dieser Reihenfolge. Das probierst du gleich aus." },
                 body: () => lesson({
                     learnTitle: "Genau diesen Satz, bitte!",
                     theory: `<p>Manchmal liefert Google Millionen Ergebnisse, aber viele passen nicht. Mit <b>Anführungszeichen</b> sagst du Google: <i>Finde genau diesen Satz – kein Wort anders, keine andere Reihenfolge!</i></p>
@@ -866,7 +1097,7 @@
                         <p>Das hilft bei Filmtiteln, Songtexten und genauen Zitaten.</p>
                         <p><b>Tipp fürs iPad:</b> Anführungszeichen findest du über die Taste <b>123</b>.</p>
                         <p><b>Der zweite Trick: site:</b> Damit suchst du nur auf einer bestimmten Webseite. <b>site:klexikon.zum.de vulkan</b> zeigt nur Treffer aus dem Klexikon. Wichtig: <b>kein Leerzeichen</b> nach dem Doppelpunkt.</p>
-                        <div class="bridge"><b>Brauche ich das überhaupt noch?</b> Für die meisten Fragen reicht eine normale Suche – Google versteht viel. Operatoren lohnen sich, wenn die Treffer nicht passen: bei genauen Titeln, Zitaten oder wenn du nur einer bestimmten Seite traust. Die KI-Übersicht oben beachtet sie meist gar nicht.</div>`,
+                        <div class="bridge"><b>Brauche ich das überhaupt noch?</b> Für die meisten Fragen reicht eine normale Suche – Google versteht viel. Operatoren lohnen sich, wenn die Treffer nicht passen: bei genauen Titeln, Zitaten oder wenn du nur einer bestimmten Seite traust. Die KI-Übersicht oben beachtet sie oft nicht.</div>`,
                     task: "Suche bei Google nach <b>König der Löwen</b>. Dann nach <b>\"König der Löwen\" 1994</b>. Was ändert sich? Probiere danach <b>site:wikipedia.org Löwe</b> – woher kommen jetzt alle Treffer?",
                     gameTitle: "Such-Simulator",
                     instr: "Gib die Suche so ein, dass nur das Richtige kommt. Drei Aufgaben."
@@ -895,7 +1126,7 @@
                     const paint = () => {
                         const st = stages[s];
                         g.innerHTML = `<span class="counter">Aufgabe ${s + 1} von ${stages.length}</span><p><b>${st.mission}</b></p>
-                            <div class="serp">${glogo}<div class="gsearch"><span>🔍</span><input id="q" placeholder="Suche eingeben …" autocomplete="off" autocapitalize="off"><button class="btn small" id="go">Suchen</button></div><div id="out"></div></div>`;
+                            <div class="serp">${glogo}<div class="gsearch"><span>🔍</span><input id="q" placeholder="Suche eingeben …" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"><button class="btn small" id="go">Suchen</button></div><div id="out"></div></div>`;
                         const run = () => {
                             const v = normQ(document.getElementById("q").value), out = document.getElementById("out");
                             if (st.success(v)) {
@@ -916,14 +1147,17 @@
                     paint();
                 },
                 journal: [
-                    { id: "a", q: "Wann lohnen sich Anführungszeichen oder site: – und wann reicht eine normale Suche? Nenne je ein eigenes Beispiel." },
-                    { id: "t", q: "🌍 Ergebnis deines Auftrags: Was hat sich mit Anführungszeichen verändert?" }
+                    { id: "a", ph: "Anführungszeichen lohnen sich, wenn …", q: "Wann lohnen sich Anführungszeichen oder site: – und wann reicht eine normale Suche? Nenne je ein eigenes Beispiel." },
+                    { id: "t", ph: "Mit Anführungszeichen hat sich verändert, dass …", q: "🌍 Ergebnis deines Auftrags: Was hat sich mit Anführungszeichen verändert?" }
                 ]
             },
             {
                 id: "duell", nav: "Suchduell", icon: "⚔️", title: "Suchduell", time: "20 min", social: ["PA"],
                 goal: "Ihr wendet Keywords und Operatoren zu zweit an und vergleicht, wer mit wenigen Wörtern am schnellsten zur Antwort kommt.",
                 gameName: "4 Duell-Runden",
+                hook: { q: "Was glaubst du: Wer kommt schneller zur Antwort – mit der ganzen Frage oder mit 2–3 Suchwörtern?",
+                    opts: [["Mit der ganzen Frage.", null], ["Mit 2–3 Suchwörtern.", null], ["Das ist egal.", null]],
+                    yes: "", any: "Gute Frage – das müsst ihr nicht glauben, ihr messt es gleich selbst mit Zeit und Klicks." },
                 body: () => B("team", "👥", "So läuft das Duell", `
                     <ol class="steps">
                         <li><b>Partner A</b> zieht hier eine Fragekarte und liest sie vor. A bedient Stoppuhr und Klick-Zähler.</li>
@@ -932,7 +1166,7 @@
                         <li>Dann tauschen. Insgesamt <b>4 Runden</b> (2 pro Person).</li>
                     </ol>
                     <p class="muted">Gewonnen hat, wer richtig liegt – mit wenig Zeit und wenig Klicks.</p>`) +
-                    B("play", "🃏", "Duell-Karten", `<div id="g"></div><div class="fb" id="g-fb"></div>`),
+                    B("play", "🃏", 'Duell-Karten <span class="badge req">Pflicht</span>', `<div id="g"></div><div class="fb" id="g-fb"></div>`),
                 mount(api) {
                     const g = document.getElementById("g");
                     let rounds = api.get("rounds") || [], card = null, shown = false, t0 = 0, sec = 0, tick = null, clicks = 0, who = "B", kw = "";
@@ -978,12 +1212,16 @@
                     };
                     paint();
                 },
-                journal: [{ id: "a", q: "Welche Suchwörter haben im Duell am besten funktioniert? Warum?" }]
+                journal: [{ id: "a", ph: "Am besten haben diese Suchwörter funktioniert:", q: "Welche Suchwörter haben im Duell am besten funktioniert? Warum?" }]
             },
             {
                 id: "bild", nav: "Bildersuche", icon: "🖼️", title: "Bilder-Rückwärtssuche", time: "15 min", social: ["EA"],
                 goal: "Du kannst mit der Bilder-Rückwärtssuche prüfen, ob ein Foto wirklich neu ist und stimmt.",
                 gameName: "Fake-Check",
+                hook: { q: "Ein Foto zeigt einen Hai im Werdersee. Viele haben es geteilt. Wie prüfst du, ob es echt ist?",
+                    opts: [["Es sieht echt aus, also stimmt es.", false], ["Ich suche mit dem Bild und schaue, wo es schon war.", true], ["Es hat viele Likes, also ist es echt.", false]],
+                    yes: "Genau das ist die Rückwärtssuche. Gleich testest du sie.",
+                    no: "Aussehen und Likes sagen nichts darüber, ob ein Foto stimmt. Die Rückwärtssuche zeigt, wo das Bild schon war." },
                 body: () => lesson({
                     learnTitle: "Ein Bild als Suchwort",
                     theory: `<p>Bildern kann man nicht immer trauen. Fotos können bearbeitet sein, von einer KI stammen oder aus einem ganz anderen Zusammenhang kommen.</p>
@@ -1022,14 +1260,18 @@
                     };
                 },
                 journal: [
-                    { id: "a", q: "Ein Bild soll „von heute“ sein, die Rückwärtssuche zeigt es aber schon 2018. Was weißt du dann?" },
-                    { id: "t", q: "🌍 Ergebnis deines Auftrags: Was hat die Rückwärtssuche zu deinem Foto gezeigt?" }
+                    { id: "a", ph: "Dann weiß ich, dass …", q: "Ein Bild soll „von heute“ sein, die Rückwärtssuche zeigt es aber schon 2018. Was weißt du dann?" },
+                    { id: "t", ph: "Die Rückwärtssuche hat gezeigt, dass …", q: "🌍 Ergebnis deines Auftrags: Was hat die Rückwärtssuche zu deinem Foto gezeigt?" }
                 ]
             },
             {
                 id: "quellen", nav: "Quellen", icon: "🧐", title: "Quellen checken", time: "15 min", social: ["EA"],
                 goal: "Du kannst mit den 5 W prüfen, ob eine Webseite eine gute Quelle ist.",
                 gameName: "Quellen-Check",
+                hook: { q: "Zwei Webseiten sagen etwas Gegensätzliches. Woran erkennst du, wem du eher trauen kannst?",
+                    opts: [["An dem, der in der Suche weiter oben steht.", false], ["Daran, wer es geschrieben hat, wann und wozu.", true], ["An der Seite mit den bunteren Bildern.", false]],
+                    yes: "Wer, Wann, Wozu – dazu kommen gleich noch zwei Fragen: die 5 W.",
+                    no: "Ein hoher Platz oder bunte Bilder heißen nicht, dass es stimmt. Wichtig ist: Wer hat es geschrieben, wann und wozu?" },
                 body: () => lesson({
                     learnTitle: "Die 5 W – dein Quellen-Check",
                     theory: `<p>Im Internet gibt es keinen Wahrheits-Filter. Jeder kann eine Webseite bauen: Fachleute, Firmen, die etwas verkaufen wollen, oder Leute ohne Ahnung. Prüfe jede Seite mit den <b>5 W</b>:</p>
@@ -1079,14 +1321,18 @@
                     paint();
                 },
                 journal: [
-                    { id: "a", q: "Darfst du Wikipedia für ein Referat nutzen? Begründe mit den 5 W – und sag, was du zusätzlich tun solltest." },
-                    { id: "t", q: "🌍 Ergebnis deines Auftrags: Wer ist laut Impressum für die Seite verantwortlich?" }
+                    { id: "a", req: true, ph: "Ich darf Wikipedia nutzen, wenn …", q: "Darfst du Wikipedia für ein Referat nutzen? Begründe mit den 5 W – und sag, was du zusätzlich tun solltest." },
+                    { id: "t", ph: "Laut Impressum ist verantwortlich:", q: "🌍 Ergebnis deines Auftrags: Wer ist laut Impressum für die Seite verantwortlich?" }
                 ]
             },
             {
                 id: "ki", nav: "KI-Antwort", icon: "✨", title: "KI-Antwort über den Treffern", time: "15 min", social: ["EA"],
                 goal: "Du kannst eine KI-Antwort in den Suchergebnissen mit echten Treffern überprüfen.",
                 gameName: "KI-Check",
+                hook: { q: "Die KI über den Treffern klingt sehr sicher. Hat sie deshalb immer recht?",
+                    opts: [["Ja, sonst würde Google sie nicht zeigen.", false], ["Nein, sie kann sich irren, auch wenn sie sicher klingt.", true], ["Ja, zumindest bei Zahlen.", false]],
+                    yes: "KI-Antworten solltest du mit einem echten Treffer prüfen.",
+                    no: "Eine KI kann Fehler machen und klingt trotzdem sicher – auch bei Zahlen. Darum prüfst du sie mit einem echten Treffer." },
                 body: () => lesson({
                     learnTitle: "Die KI fasst zusammen – und irrt sich manchmal",
                     theory: `<p>Bei Google steht oft ganz oben eine <b>„Übersicht mit KI“</b>. Eine KI liest Webseiten und schreibt eine kurze Antwort. Das ist praktisch – aber:</p>
@@ -1102,21 +1348,25 @@
                 }),
                 mount(api) {
                     const serp = R => `<div class="serp"><div class="gsearch"><span>🔍</span><span class="q">${R.q}</span></div>
-                        <div class="ki-box"><div class="h">✨ Übersicht mit KI</div>${R.ki}<div class="src">${R.src}</div></div>
+                        <div class="ki-box"><div class="h">✨ Übersicht mit KI</div>${R.ki}<div class="src">${R.src}</div></div>${R.fake ? `<p class="count">🧪 Nachgestelltes Beispiel: Diese KI-Antwort haben wir selbst gebaut, damit du üben kannst.</p>` : ""}
                         ${R.res.map(([u, t, s]) => `<div class="res"><span class="u">${u}</span><span class="t">${t}</span><span class="s">${s}</span></div>`).join("")}</div>`;
                     K.cards("g", KI_ROUNDS.map(R => ({ t: serp(R), a: R.a, why: R.why })),
                         { 0: "✅ Stimmt – die Treffer bestätigen es", 1: "❌ Stimmt nicht – die Treffer sagen etwas anderes", 2: "🤷 Kann ich nicht prüfen" },
                         (right, n) => api.win(starsFor(n - right)), { unit: "Suche" });
                 },
                 journal: [
-                    { id: "a", q: "Warum solltest du eine KI-Antwort über den Treffern immer prüfen? Nenne ein Beispiel aus der Übung." },
-                    { id: "t", q: "🌍 Ergebnis deines Auftrags: Stimmte die KI-Antwort zu den Katzen mit einem echten Treffer überein?" }
+                    { id: "a", ph: "Ich prüfe die KI-Antwort, weil …", q: "Warum solltest du eine KI-Antwort über den Treffern immer prüfen? Nenne ein Beispiel aus der Übung." },
+                    { id: "t", ph: "Beim Vergleich habe ich gesehen, dass", q: "🌍 Ergebnis deines Auftrags: Stimmte die KI-Antwort zu den Katzen mit einem echten Treffer überein?" }
                 ]
             },
             {
                 id: "vergleich", nav: "Vergleich", icon: "⚖️", title: "Suchmaschinen im Vergleich", time: "15 min", social: ["EA"],
                 goal: "Du kannst drei Suchmaschinen vergleichen und begründen, welche du warum nutzt.",
                 gameName: "Zuordnen-Spiel",
+                hook: { q: "Sind alle Suchmaschinen gleich – nur mit anderen Farben?",
+                    opts: [["Ja, alle sind gleich.", false], ["Nein, sie unterscheiden sich, z. B. bei Datenschutz, Werbung und Aussehen.", true], ["Nur Google ist eine richtige Suchmaschine.", false]],
+                    yes: "Welche das sind, ordnest du gleich zu.",
+                    no: "Sie sehen ähnlich aus, gehen aber unterschiedlich mit deinen Daten um und zeigen unterschiedlich viel Werbung. Du ordnest das gleich zu." },
                 body: () => lesson({
                     learnTitle: "Google ist nicht die einzige",
                     theory: `<p>Es gibt Alternativen, die manches anders machen:</p>
@@ -1144,8 +1394,8 @@
                     }));
                 },
                 journal: [
-                    { id: "a", q: "Welche Suchmaschine nimmst du ab jetzt – und warum?" },
-                    { id: "t", q: "🌍 Ergebnis deines Auftrags: Wo war bei „Schule der Zukunft“ am meisten Werbung?" }
+                    { id: "a", ph: "Ab jetzt nehme ich die Suchmaschine", q: "Welche Suchmaschine nimmst du ab jetzt – und warum?" },
+                    { id: "t", ph: "Am meisten Werbung war bei …", q: "🌍 Ergebnis deines Auftrags: Wo war bei „Schule der Zukunft“ am meisten Werbung?" }
                 ]
             },
             {
@@ -1153,13 +1403,14 @@
                 goal: "Du beantwortest eine eigene Frage mit Keywords, geprüften Quellen und eigenen Worten.",
                 gameName: "Webquest",
                 body: () => B("learn", "📖", "Dein Meisterstück", `<p>Du kennst jetzt alle Werkzeuge: Keywords, Anführungszeichen, Bildersuche, Quellen-Check, KI-Prüfung und verschiedene Suchmaschinen. Jetzt führst du eine eigene Recherche durch – zu einem Thema deiner Wahl, z. B. „Das schnellste Tier“, „Die tiefste Stelle im Meer“ oder „Wie alt werden Schildkröten?“.</p>`) +
-                    B("play", "🔍", "Dein Webquest", `<div id="g"></div><div class="fb" id="g-fb"></div>`) +
-                    B("team", "👥", "Zu zweit", `<p>Tauscht die iPads und füllt gegenseitig den <b>Partner-Check</b> (Schritt 5) aus. Seid ehrlich – ein guter Tipp hilft mehr als ein Lob.</p>`) +
-                    B("info", "📤", "Abgabe", `<p>Fertig? <b>Melde dich kurz bei mir</b> und zeig mir deine Mappe. Danach sicherst du sie als PDF und lädst sie bei <b>itslearning</b> hoch.</p>`),
+                    B("play", "🔍", 'Dein Webquest <span class="badge req">Pflicht</span>', `<div id="g"></div><div class="fb" id="g-fb"></div>`) +
+                    B("team", "👥", 'Zu zweit <span class="badge req">Pflicht</span>', `<p>Erst prüfst du dich selbst (<b>Schritt 5</b>). Dann tauscht ihr die iPads: Dein Partner tippt im <b>Partner-Check</b> (Schritt 6) die Sätze an, die stimmen. Seid ehrlich – ein guter Tipp hilft mehr als ein Lob.</p>`) +
+                    B("info", "📤", "Abgabe", `<p>Fertig? Dann haken Selbst-Check und Partner-Check die Qualität ab – du musst nicht auf mich warten. Sichere die Mappe als PDF und lade sie bei <b>itslearning</b> hoch. Ich schaue mir einzelne Mappen stichprobenartig an.</p>`),
                 mount(api) {
                     const g = document.getElementById("g"), W = ["Wer", "Wann", "Wozu", "Woher", "Wie"];
                     const PC = ["Die Quellen passen zur Frage", "Die 5 W sind ehrlich abgehakt", "Die Antwort steht in eigenen Worten", "Ich würde der Antwort trauen"];
-                    const wq = Object.assign({ frage: "", kw: "", src: [{ n: "", w: [] }, { n: "", w: [] }, { n: "", w: [] }], antwort: "", pc: [], ptipp: "" }, api.get("wq") || {});
+                    const SC = ["Meine Frage ist klar.", "Ich habe wenige, gute Suchwörter benutzt.", "Ich habe meine Quellen mit den 5 W geprüft.", "Ich habe die Antwort in eigenen Worten geschrieben."];
+                    const wq = Object.assign({ frage: "", kw: "", src: [{ n: "", w: [] }, { n: "", w: [] }, { n: "", w: [] }], antwort: "", sc: [], pc: [], pdone: false, ptipp: "" }, api.get("wq") || {});
                     const save = () => api.set("wq", wq);
                     g.innerHTML = `<div class="field"><label for="wq-f">1 · Meine Frage</label><input class="txt" id="wq-f" value="${K.esc(wq.frage)}" placeholder="Was ist …?"></div>
                         <div class="field"><label for="wq-k">2 · Meine Suchwörter (Keywords)</label><input class="txt" id="wq-k" value="${K.esc(wq.kw)}" placeholder="z. B. schnellstes Tier Welt"></div>
@@ -1167,14 +1418,19 @@
                         ${wq.src.map((s, i) => `<div class="src-box"><input class="txt" data-src="${i}" value="${K.esc(s.n)}" placeholder="Quelle ${i + 1}: Name der Seite oder Link">
                             <div class="wchk">${W.map(w => `<label><input type="checkbox" data-s="${i}" data-w="${w}" ${s.w.includes(w) ? "checked" : ""}>${w}?</label>`).join("")}</div></div>`).join("")}</div>
                         <div class="field"><label for="wq-a">4 · Meine Antwort in eigenen Worten</label><textarea class="txt" id="wq-a" placeholder="Ich habe herausgefunden, dass …">${K.esc(wq.antwort)}</textarea></div>
-                        <div class="field src-box"><label>5 · Partner-Check – gib dein iPad deinem Partner. Er oder sie füllt das aus:</label>
+                        <div class="field src-box"><label>5 · Selbst-Check – tippe an, was stimmt:</label>
+                            <div class="wchk">${SC.map((p, i) => `<label><input type="checkbox" data-sc="${i}" ${wq.sc.includes(i) ? "checked" : ""}>${p}</label>`).join("")}</div></div>
+                        <div class="field src-box"><label>6 · Partner-Check – gib dein iPad deinem Partner. Er oder sie tippt an, was stimmt:</label>
                             <div class="wchk">${PC.map((p, i) => `<label><input type="checkbox" data-pc="${i}" ${wq.pc.includes(i) ? "checked" : ""}>${p}</label>`).join("")}</div>
-                            <textarea class="txt" id="wq-pt" style="margin-top:8px" placeholder="Tipp vom Partner: Was ist gut, was sollte noch besser werden?">${K.esc(wq.ptipp)}</textarea></div>
+                            <textarea class="txt" id="wq-pt" style="margin-top:8px" placeholder="Tipp vom Partner: Was ist gut, was sollte noch besser werden?">${K.esc(wq.ptipp)}</textarea>
+                            <div class="wchk"><label><input type="checkbox" id="wq-pd" ${wq.pdone ? "checked" : ""}>Ich habe als Partner alles geprüft.</label></div></div>
                         <div class="actions center"><button class="btn" id="wq-ok">✅ Webquest prüfen</button></div>`;
                     document.getElementById("wq-f").oninput = e => { wq.frage = e.target.value; save(); };
                     document.getElementById("wq-k").oninput = e => { wq.kw = e.target.value; save(); };
                     document.getElementById("wq-a").oninput = e => { wq.antwort = e.target.value; save(); };
                     document.getElementById("wq-pt").oninput = e => { wq.ptipp = e.target.value; save(); };
+                    g.querySelectorAll("[data-sc]").forEach(c => c.onchange = () => { const i = +c.dataset.sc; wq.sc = wq.sc.filter(x => x !== i); if (c.checked) wq.sc.push(i); save(); });
+                    document.getElementById("wq-pd").onchange = e => { wq.pdone = e.target.checked; save(); };
                     g.querySelectorAll("[data-pc]").forEach(c => c.onchange = () => { const i = +c.dataset.pc; wq.pc = wq.pc.filter(x => x !== i); if (c.checked) wq.pc.push(i); save(); });
                     g.querySelectorAll("[data-src]").forEach(inp => inp.oninput = () => { wq.src[+inp.dataset.src].n = inp.value; save(); });
                     g.querySelectorAll("[data-w]").forEach(c => c.onchange = () => {
@@ -1188,13 +1444,15 @@
                         if (named.length < 2) return fb("Du brauchst mindestens 2 Quellen.", false);
                         if (named.some(s => s.w.length < 3)) return fb("Jede Quelle sollte mindestens 3 der 5 W erfüllen. Such sonst eine bessere Quelle.", false);
                         if (wq.antwort.trim().length < 20) return fb("Schreib deine Antwort in ein bis zwei ganzen Sätzen.", false);
-                        if (wq.ptipp.trim().length < 10) return fb("Jetzt fehlt noch der Partner-Check mit einem Tipp vom Partner.", false);
+                        if (wq.sc.length < SC.length) return fb("Geh den Selbst-Check (Schritt 5) durch. Stimmt etwas noch nicht? Dann verbessere es zuerst.", false);
+                        if (wq.ptipp.trim().length < 10 || !wq.pdone) return fb("Jetzt ist dein Partner dran (Schritt 6): Kriterien antippen, einen Tipp schreiben und „alles geprüft“ ankreuzen.", false);
+                        if (wq.pc.length < 3) return fb("Dein Partner hat weniger als 3 Kriterien angetippt. Verbessere noch etwas und lass noch einmal prüfen.", false);
                         fb("✓ Dein Webquest ist vollständig und steht jetzt in deiner Mappe.", true);
-                        api.result(`Frage: ${wq.frage.trim()} · Suchwörter: ${wq.kw.trim()} · Quellen: ${named.map(s => `${s.n.trim()} (${s.w.join(", ")})`).join("; ")} · Antwort: ${wq.antwort.trim()} · Partner-Check: ${wq.pc.map(i => PC[i]).join(", ") || "–"}; Tipp: ${wq.ptipp.trim()}`);
+                        api.result(`Frage: ${wq.frage.trim()} · Suchwörter: ${wq.kw.trim()} · Quellen: ${named.map(s => `${s.n.trim()} (${s.w.join(", ")})`).join("; ")} · Antwort: ${wq.antwort.trim()} · Selbst-Check: ${wq.sc.length} von ${SC.length} · Partner-Check: ${wq.pc.map(i => PC[i]).join(", ") || "–"}; Tipp: ${wq.ptipp.trim()}`);
                         api.win(3);
                     };
                 },
-                journal: [{ id: "a", q: "Bist du dir sicher, dass deine Antwort stimmt? Woran machst du das fest?" }]
+                journal: [{ id: "a", req: true, ph: "Ich bin mir sicher, weil …", q: "Bist du dir sicher, dass deine Antwort stimmt? Woran machst du das fest?" }]
             }
         ];
 
